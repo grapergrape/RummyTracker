@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MyDatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_PLAYERS = "players";
@@ -44,6 +46,16 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
                 + "PRIMARY KEY (game_id, player_id),"
                 + "FOREIGN KEY (game_id) REFERENCES games(id),"
                 + "FOREIGN KEY (player_id) REFERENCES " + TABLE_PLAYERS + "(player_id))";
+        db.execSQL(createTableSql);
+
+        // Create a table to store game scores
+        createTableSql = "CREATE TABLE game_scores ("
+                + "score_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + "identifier TEXT,"
+                + "score INTEGER,"
+                + "game_player_id INTEGER,"
+                + "consecutive_tracker INTEGER,"
+                + "FOREIGN KEY (game_player_id) REFERENCES game_players(rowid))";
         db.execSQL(createTableSql);
     }
 
@@ -331,8 +343,153 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return playerId;
     }
 
+    public void insertScore(int gamePlayerId, int score) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Get the current consecutive tracker value for this game and player
+        int consecutiveTracker = getCurrentConsecutiveTracker(db, gamePlayerId);
+
+        // Insert the new score with the current consecutive tracker value
+        ContentValues values = new ContentValues();
+        values.put("game_player_id", gamePlayerId);
+        values.put("score", score);
+        values.put("consecutive_tracker", consecutiveTracker);
+        db.insert("game_scores", null, values);
+
+        // Increment the consecutive tracker value for this game and player
+        incrementConsecutiveTracker(db, gamePlayerId);
+    }
+
+    private int getCurrentConsecutiveTracker(SQLiteDatabase db, int gamePlayerId) {
+        int consecutiveTracker = 1;
+        String[] columns = {"consecutive_tracker"};
+        String selection = "game_player_id = ?";
+        String[] selectionArgs = {String.valueOf(gamePlayerId)};
+        String orderBy = "consecutive_tracker DESC";
+        Cursor cursor = db.query("game_scores", columns, selection, selectionArgs, null, null, orderBy);
+        if (cursor.moveToFirst()) {
+            consecutiveTracker = cursor.getInt(cursor.getColumnIndex("consecutive_tracker")) + 1;
+        }
+        cursor.close();
+        return consecutiveTracker;
+    }
+
+    private void incrementConsecutiveTracker(SQLiteDatabase db, int gamePlayerId) {
+        int consecutiveTracker = getCurrentConsecutiveTracker(db, gamePlayerId);
+        ContentValues values = new ContentValues();
+        values.put("consecutive_tracker", consecutiveTracker);
+        String whereClause = "game_player_id = ?";
+        String[] whereArgs = {String.valueOf(gamePlayerId)};
+        db.update("game_scores", values, whereClause, whereArgs);
+    }
 
 
+    public int getPlayerScoreForGame(int gameId, int playerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT gs.score FROM game_scores gs " +
+                "INNER JOIN game_players gp ON gs.game_player_id = gp.rowid " +
+                "WHERE gp.game_id = ? AND gp.player_id = ?;";
+        Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(gameId), String.valueOf(playerId)});
+        int score = -1; // default value if score is not found
+        if (cursor.moveToFirst()) {
+            score = cursor.getInt(cursor.getColumnIndex("score"));
+        }
+        cursor.close();
+        return score;
+    }
+
+
+
+    public void insertGameScore(int gameId, int playerId, int score) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        // First, find the game_player_id for this game and player
+        String findGamePlayerSql = "SELECT rowid FROM game_players WHERE game_id = ? AND player_id = ?";
+        String[] findGamePlayerArgs = {String.valueOf(gameId), String.valueOf(playerId)};
+        Cursor cursor = db.rawQuery(findGamePlayerSql, findGamePlayerArgs);
+        int gamePlayerId = -1;
+        if (cursor.moveToNext()) {
+            gamePlayerId = cursor.getInt(0);
+        }
+        cursor.close();
+
+        // If the game_player_id was not found, do not insert the score
+        if (gamePlayerId == -1) {
+            return;
+        }
+
+        // Insert the game score record
+        ContentValues values = new ContentValues();
+        values.put("identifier", UUID.randomUUID().toString());
+        values.put("score", score);
+        values.put("game_player_id", gamePlayerId);
+        values.put("consecutive_tracker", getConsecutiveTracker(gameId, playerId) + 1);
+        db.insert("game_scores", null, values);
+
+        // Check if the score is zero and, if so, print out a message
+        if (score == 0) {
+            String findPlayerSql = "SELECT nickname FROM players WHERE player_id = ?";
+            String[] findPlayerArgs = {String.valueOf(playerId)};
+            cursor = db.rawQuery(findPlayerSql, findPlayerArgs);
+            String nickname = "";
+            if (cursor.moveToNext()) {
+                nickname = cursor.getString(0);
+            }
+            cursor.close();
+            Log.d("RUMMY", nickname + " won the round of rummy!");
+        }
+    }
+
+    private int getConsecutiveTracker(int gameId, int playerId) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        int consecutiveTracker = 0;
+
+        // First, find the game_player_id for this game and player
+        String findGamePlayerSql = "SELECT rowid FROM game_players WHERE game_id = ? AND player_id = ?";
+        String[] findGamePlayerArgs = {String.valueOf(gameId), String.valueOf(playerId)};
+        Cursor cursor = db.rawQuery(findGamePlayerSql, findGamePlayerArgs);
+        int gamePlayerId = -1;
+        if (cursor.moveToNext()) {
+            gamePlayerId = cursor.getInt(0);
+        }
+        cursor.close();
+
+        // If the game_player_id was not found, return 0
+        if (gamePlayerId == -1) {
+            return consecutiveTracker;
+        }
+
+        // Find the latest consecutive tracker value for this player in this game
+        String findTrackerSql = "SELECT consecutive_tracker FROM game_scores WHERE game_player_id = ? ORDER BY score_id DESC LIMIT 1";
+        String[] findTrackerArgs = {String.valueOf(gamePlayerId)};
+        cursor = db.rawQuery(findTrackerSql, findTrackerArgs);
+        if (cursor.moveToNext()) {
+            consecutiveTracker = cursor.getInt(0);
+        }
+        cursor.close();
+
+
+        return consecutiveTracker;
+    }
+
+    public Player getPlayer(int playerId) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(playerId)};
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+
+        Player player = null;
+        if (cursor.moveToFirst()) {
+            String nickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+            player = new Player(playerId, nickname);
+        }
+
+        cursor.close();
+        db.close();
+
+        return player;
+    }
 
 }
 

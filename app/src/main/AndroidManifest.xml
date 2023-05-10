@@ -35,6 +35,10 @@
         <activity
             android:name=".InsertPlayerActivity"
             android:label="Insert Player" />
+        <activity
+            android:name=".InsertScoreActivity"
+            android:label="Insert Score" />
+
     </application>
 
 </manifest>

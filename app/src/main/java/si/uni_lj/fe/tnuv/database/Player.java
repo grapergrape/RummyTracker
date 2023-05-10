@@ -23,9 +23,7 @@ public class Player implements Serializable {
         return nickname;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
+
 
 }
 

@@ -6,8 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,7 +67,109 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to upgrade the database schema, modify this method
     }
-    //Method that checks if a game with a given name already exists
+    //This method uses an SQL query that counts how many times each player has won (i.e. had a score of 0) in the game_scores table, and then sorts the results in descending order by the win count. The method returns a list of strings, where each string represents a player's nickname and win count.
+    public ArrayList<String> getPlayersSortedByWins() {
+        ArrayList<String> playerStatsList = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + TABLE_PLAYERS + "." + COLUMN_PLAYER_NICKNAME
+                + ", COUNT(CASE WHEN game_scores.score = 0 THEN 1 ELSE null END) as win_count FROM " + TABLE_PLAYERS
+                + " JOIN game_players ON " + TABLE_PLAYERS + "." + COLUMN_PLAYER_ID
+                + " = game_players.player_id JOIN game_scores ON game_players.rowid"
+                + " = game_scores.game_player_id GROUP BY " + TABLE_PLAYERS + "."
+                + COLUMN_PLAYER_ID + " ORDER BY win_count DESC", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String playerNickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+                int winCount = cursor.getInt(cursor.getColumnIndex("win_count"));
+                playerStatsList.add(playerNickname + ": " + winCount);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return playerStatsList;
+    }
+
+    //Method that returns a list of players by their average score whre the lower the score the better
+    public ArrayList<String> getPlayersSortedByAverageScore() {
+        ArrayList<String> playerStatsList = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT " + TABLE_PLAYERS + "." + COLUMN_PLAYER_NICKNAME
+                + ", AVG(game_scores.score) as average_score FROM " + TABLE_PLAYERS
+                + " JOIN game_players ON " + TABLE_PLAYERS + "." + COLUMN_PLAYER_ID
+                + " = game_players.player_id JOIN game_scores ON game_players.rowid"
+                + " = game_scores.game_player_id GROUP BY " + TABLE_PLAYERS + "."
+                + COLUMN_PLAYER_ID + " ORDER BY average_score ASC", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String playerNickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+                double averageScore = cursor.getDouble(cursor.getColumnIndex("average_score"));
+                playerStatsList.add(playerNickname + ": " + averageScore);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return playerStatsList;
+    }
+
+    //Method  that returns how mnay times a player has had a score of 0 aka won the game
+    public int countZeroScoresForPlayer(int playerId) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM game_scores "
+                + "WHERE game_player_id IN ("
+                + "  SELECT game_player_id FROM game_players "
+                + "  WHERE player_id = ?"
+                + ") AND score = 0 "
+                + "GROUP BY consecutive_tracker";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playerId)});
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            do {
+                count += cursor.getInt(0);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return count;
+    }
+
+
+    public List<HashMap<String, Object>> getPlayerScoresForGame(int playerId, int gameId) {
+        List<HashMap<String, Object>> scoresList = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT game_scores.score_id, game_scores.identifier, game_scores.score, game_scores.consecutive_tracker " +
+                "FROM game_scores " +
+                "INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid " +
+                "WHERE game_players.game_id = ? AND game_players.player_id = ? " +
+                "ORDER BY game_scores.consecutive_tracker ASC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(gameId), String.valueOf(playerId)});
+        if (cursor.moveToFirst()) {
+            do {
+                HashMap<String, Object> score = new HashMap<>();
+                score.put("score_id", cursor.getInt(0));
+                score.put("identifier", cursor.getString(1));
+                score.put("score", cursor.getInt(2));
+                score.put("consecutive_tracker", cursor.getInt(3));
+                scoresList.add(score);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return scoresList;
+    }
+
+
+
     public boolean isGameNameUnique(String gameName) {
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -398,6 +503,39 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         return score;
     }
 
+
+    public int getPlayerScoreForGame(long playerId, long gameId, int consecutiveTracker) {
+        SQLiteDatabase db = getReadableDatabase();
+        int score = -1;
+        Cursor cursor = db.query("game_scores",
+                new String[]{"score"},
+                "game_player_id = ? AND consecutive_tracker = ?",
+                new String[]{String.valueOf(getGamePlayerId(playerId, gameId)), String.valueOf(consecutiveTracker)},
+                null,
+                null,
+                null);
+        if (cursor.moveToFirst()) {
+            score = cursor.getInt(cursor.getColumnIndex("score"));
+        }
+        cursor.close();
+        return score;
+    }
+    private long getGamePlayerId(long playerId, long gameId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query("game_players",
+                new String[]{"rowid"},
+                "player_id = ? AND game_id = ?",
+                new String[]{String.valueOf(playerId), String.valueOf(gameId)},
+                null,
+                null,
+                null);
+        long gamePlayerId = -1;
+        if (cursor.moveToFirst()) {
+            gamePlayerId = cursor.getLong(cursor.getColumnIndex("rowid"));
+        }
+        cursor.close();
+        return gamePlayerId;
+    }
 
 
     public void insertGameScore(int gameId, int playerId, int score) {

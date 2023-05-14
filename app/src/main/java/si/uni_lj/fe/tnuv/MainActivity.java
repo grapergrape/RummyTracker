@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText gameNameEditText;
     private Button insertButton;
     private Button allGamesButton;
+    private Button viewStatsButton;
     private MyDatabaseHelper dbHelper;
 
     @Override
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         gameNameEditText = findViewById(R.id.game_name_edittext);
         insertButton = findViewById(R.id.insert_button);
         allGamesButton = findViewById(R.id.all_games_button);
+        viewStatsButton = findViewById(R.id.stats_button);
 
         insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +64,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        viewStatsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ViewStatsActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -71,3 +81,4 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 }
+

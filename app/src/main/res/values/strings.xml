@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">RummyTracker</string>
-    <string name="players_list_title">"Player List:    Scores:"</string>
+    <string name="players_list_title">"Player List:"</string>
     <string name="no_players_text">There are no players added to this game, please add players</string>
     <string name="add_player_button_text">Add a player</string>
 </resources>

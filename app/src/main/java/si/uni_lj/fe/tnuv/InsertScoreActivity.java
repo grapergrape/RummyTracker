@@ -33,7 +33,7 @@ public class InsertScoreActivity extends AppCompatActivity {
         EditText scoreEditText = findViewById(R.id.score_edittext);
 
         // Set a filter on the EditText to only allow integers as input
-        scoreEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(2), new InputFilterMinMax("0", "99") });
+        scoreEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299") });
 
         // Find the submit button and set the onClickListener
         Button submitButton = findViewById(R.id.submit_button);
@@ -52,6 +52,12 @@ public class InsertScoreActivity extends AppCompatActivity {
                 // Parse the score as an integer
                 int score = Integer.parseInt(scoreString);
 
+                // Check if the player and game IDs are valid
+                if (playerId == -1 || gameId == -1) {
+                    Toast.makeText(InsertScoreActivity.this, "Invalid player or game ID", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 // Insert the score into the database
                 dbHelper.insertGameScore(gameId, playerId, score);
                 // Finish the activity
@@ -62,7 +68,7 @@ public class InsertScoreActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //dbHelper.close();
+        dbHelper.close();
     }
 }
 

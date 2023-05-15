@@ -12,7 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RummyTracker"
         tools:targetApi="31">
-
+        <activity
+            android:name=".GameMenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddGameActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -22,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".GameListActivity"
             android:label="Game List" />
@@ -47,8 +51,6 @@
         <activity
             android:name=".AverageScoresActivity"
             android:label="View Average Scores Stat" />
-
-
     </application>
 
 </manifest>

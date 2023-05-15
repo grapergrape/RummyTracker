@@ -1,33 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/game_name_edittext"
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/choose_game_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Enter game name"/>
+        android:text="@string/main_menu_choose_a_game"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menu_image" />
+
+    <ScrollView
+        android:layout_width="365dp"
+        android:layout_height="311dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choose_game_title"
+        app:layout_constraintVertical_bias="1.0">
+
+        <TableLayout
+            android:id="@+id/table_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/choose_game_title">
+
+            <TableRow
+                android:id="@+id/table_row_header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="-4dp"
+                tools:layout_editor_absoluteY="384dp">
+
+                <!--            <TextView-->
+                <!--                android:id="@+id/table_header_name"-->
+                <!--                android:layout_width="0dp"-->
+                <!--                android:layout_height="wrap_content"-->
+                <!--                android:layout_weight="1"-->
+                <!--                android:text="Name"-->
+                <!--                android:textStyle="bold" />-->
+
+            </TableRow>
+
+            <!--        <View-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="3dp"-->
+            <!--            android:background="@android:color/darker_gray" />-->
+
+        </TableLayout>
+    </ScrollView>
+
+
+    <ImageView
+        android:id="@+id/menu_image"
+        android:layout_width="367dp"
+        android:layout_height="297dp"
+        android:src="@drawable/rummy_tracker_wallpaper"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/insert_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Insert a new game"/>
+        android:id="@+id/btn_add_game_activity"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_style_add_game_activity"
+        android:text="+"
+        android:textSize="20sp"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/menu_image" />
 
-    <Button
-        android:id="@+id/all_games_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show all games"/>
 
-    <Button
-        android:id="@+id/stats_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Show stats"/>
 
-</LinearLayout>
+
+
+
+
+
+
+
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    android:orientation="vertical"-->
+    <!--    android:layout_width="match_parent"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    tools:context=".MainActivity">-->
+    <!--    -->
+    <!--    <EditText-->
+    <!--        android:id="@+id/game_name_edittext"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:hint="Enter game name"/>-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/insert_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Insert a new game"/>-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/all_games_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Show all games"/>-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/stats_button"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Show stats"/>-->
+
+    <!--</LinearLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>

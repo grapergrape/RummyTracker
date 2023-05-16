@@ -31,6 +31,8 @@ public class PlayerListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_list);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+
         dbHelper = new MyDatabaseHelper(this);
 
         // Get the game ID from the intent extras

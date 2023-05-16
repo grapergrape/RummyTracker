@@ -18,6 +18,8 @@ public class AverageScoresActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_average_scores);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+
         // Get a reference to the TextView to display the player stats
         TextView playerStatsTextView = findViewById(R.id.player_stats_text_view);
 

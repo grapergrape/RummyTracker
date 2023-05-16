@@ -12,12 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RummyTracker"
         tools:targetApi="31">
+<!--        android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
+
         <activity
             android:name=".GameMenuActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>   <!-- ta parent activity sm mogu določit zato, da integrirani up action/back button v app bar/toolbar/action bar-u ve kam more it-->
         <activity
             android:name=".AddGameActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>   <!-- ta parent activity sm mogu določit zato, da integrirani up action/back button v app bar/toolbar/action bar-u ve kam more it-->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -27,30 +31,39 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".GameListActivity"
-            android:label="Game List" />
+<!--        <activity-->
+<!--            android:name=".GameListActivity"-->
+<!--            android:label="Game List" />-->
         <activity
             android:name=".PlayerListActivity"
-            android:label="Player List" />
+            android:label="Player List"
+            android:parentActivityName=".GameMenuActivity" />
         <activity
             android:name=".AddPlayerActivity"
-            android:label="Add Player" />
+            android:label="Add Player"
+            android:parentActivityName=".PlayerListActivity" />
         <activity
             android:name=".InsertPlayerActivity"
-            android:label="Insert Player" />
+            android:label="Insert Player"
+            android:parentActivityName=".AddPlayerActivity" />
         <activity
             android:name=".InsertScoreActivity"
-            android:label="Insert Score" />
+            android:label="Insert Score"
+            android:parentActivityName=".AddPlayerActivity" />
         <activity
             android:name=".ViewStatsActivity"
-            android:label="View Stats" />
+            android:label="View Stats"
+            android:parentActivityName=".GameMenuActivity" />
         <activity
             android:name=".MostWinsActivity"
-            android:label="View Most Wins Stat" />
+            android:label="View Most Wins Stat"
+            android:parentActivityName=".ViewStatsActivity" />
         <activity
             android:name=".AverageScoresActivity"
-            android:label="View Average Scores Stat" />
+            android:label="View Average Scores Stat"
+            android:parentActivityName=".ViewStatsActivity" />
     </application>
+
+
 
 </manifest>

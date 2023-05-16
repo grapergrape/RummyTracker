@@ -6,20 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".GameMenuActivity">
 
-    <ImageView
-        android:id="@+id/game_menu_image"
-        android:layout_width="367dp"
-        android:layout_height="297dp"
-        android:src="@drawable/rummy_tracker_game_menu_stroke"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/game_name_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/game_menu_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:src="@drawable/rummy_tracker_game_menu_stroke"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/game_name_title"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="24sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/game_menu_image" />-->
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/game_menu_image"-->
+<!--        tools:context=".activityGameMenu">-->
+
+
+    <Button
+        android:id="@+id/button_write_score"
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/button_write_score_string"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,37 +52,31 @@
         app:layout_constraintTop_toBottomOf="@+id/game_menu_image" />
 
     <Button
-        android:id="@+id/button_write_score"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:textSize="24sp"
-        android:text="@string/button_write_score_string"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/game_name_title" />
-
-    <Button
         android:id="@+id/button_leaderboards"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="175dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/button_leaderboards_string"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_write_score" />
 
-    <Button
-        android:id="@+id/game_menu_trash_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/restore_from_trash_24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/game_name_title"
-        android:textColor="#000000"
-        />
+
+<!--    </LinearLayout>-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/game_menu_trash_icon"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:background="@drawable/icon_delete"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        android:textColor="#000000"-->
+<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

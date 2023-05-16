@@ -23,6 +23,8 @@ public class InsertScoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_score);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+
         dbHelper = new MyDatabaseHelper(this);
 
         // Get the player and game IDs from the intent extras

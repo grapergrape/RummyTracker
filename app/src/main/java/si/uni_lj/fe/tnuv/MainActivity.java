@@ -91,24 +91,30 @@ public class MainActivity extends AppCompatActivity {
 
             Button gameNameButton = new Button(this);
             gameNameButton.setText(game.getName());
-            gameNameButton.setTextSize(15);  //set the text size in pixels
+            gameNameButton.setTextSize(18);  //set the text size in pixels
             gameNameButton.setBackgroundResource(R.drawable.game_buttons_style);
             gameNameButton.setTextColor(Color.WHITE);
             gameNameButton.setAllCaps(false);
             gameNameButton.setPadding(40, 0, 40, 0);
 
-            TableRow.LayoutParams tableRowParams  = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int screenWidth = displayMetrics.widthPixels; //od Huawei-ja je 1080
+            double game_btn_screen_ratio = 0.65;
+//            Log.d("Tag", "screenWidth: " + String.valueOf(screenWidth));
+//            Log.d("Tag", "game_btn_screen_ratio*screenWidth: " + (int) Math.round(game_btn_screen_ratio * screenWidth));
+
+            TableRow.LayoutParams tableRowParams  = new TableRow.LayoutParams((int) Math.round(game_btn_screen_ratio * screenWidth),
                     TableRow.LayoutParams.WRAP_CONTENT);
             tableRowParams.height=130;
 
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//            int screenWidth = displayMetrics.widthPixels; //je 1080
-//            Log.d("Tag", "screenWidth: " + String.valueOf(screenWidth));
-//            tableRowParams.setMargins(200, 5, 0, 5); // Set bottom margin of 16 pixels
-            tableRowParams.setMargins(250, 5, 0, 5);
 
-            tableRowParams.gravity = Gravity.CENTER;  //set the gravity of the view within its cell
+//            tableRowParams.setMargins(200, 5, 0, 5); // Set bottom margin of 16 pixels
+            int game_btn_left_margin = (int) Math.round((1-game_btn_screen_ratio)/2*screenWidth);
+//            Log.d("Tag", "game_btn_left_margin: " + game_btn_left_margin);
+            tableRowParams.setMargins(game_btn_left_margin, 5, 0, 5);
+
+//            tableRowParams.gravity = Gravity.CENTER;  //set the gravity of the view within its cell
 //            tableRowParams.column=3;
             gameNameButton.setLayoutParams(tableRowParams);
             gameNameButton.setOnClickListener(new View.OnClickListener() {

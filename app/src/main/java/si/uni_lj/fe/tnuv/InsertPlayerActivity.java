@@ -21,6 +21,8 @@ public class InsertPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_player);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+
         dbHelper = new MyDatabaseHelper(this);
         nicknameEditText = findViewById(R.id.nickname_edit_text);
 

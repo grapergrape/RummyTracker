@@ -4,7 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -21,23 +27,32 @@ public class GameMenuActivity extends AppCompatActivity {
     private MyDatabaseHelper dbHelper;
     private TableLayout gameTableLayout;
     private int table_layout_id;
+    public String game_name_string;
+    public int game_menu_image_height;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_menu);
 
-        dbHelper = new MyDatabaseHelper(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
-        // ZA glavno ozadje aplikacije
+        Button writeScoreButton = findViewById(R.id.button_write_score);
+        Button leaderboardsButton = findViewById(R.id.button_leaderboards);
         imageMainWallpaper = findViewById(R.id.game_menu_image);
         imageMainWallpaper.setImageResource(R.drawable.rummy_tracker_game_menu_stroke);
 
+
+        dbHelper = new MyDatabaseHelper(this);
+
+
         Intent intent_incoming = getIntent();
-        String game_name_string = intent_incoming.getStringExtra("message_key_1");
-//        TextView textViewGameNameTitle = findViewById(R.id.game_name_title);
-//        textViewGameNameTitle.setText(game_name_string);
-        ((TextView) findViewById(R.id.game_name_title)).setText(game_name_string);
+        game_name_string = intent_incoming.getStringExtra("message_key_1");
+////        TextView textViewGameNameTitle = findViewById(R.id.game_name_title);
+////        textViewGameNameTitle.setText(game_name_string);
+//        ((TextView) findViewById(R.id.game_name_title)).setText(game_name_string);
+        setTitle(game_name_string);
+
 
 
 ////        gameTableLayout = (TableLayout) intent.getCharExtra("message_key_2");
@@ -46,19 +61,19 @@ public class GameMenuActivity extends AppCompatActivity {
 
         TableRow row = (TableRow) intent_incoming.getCharSequenceExtra("message_key_3");
 
-        Button deleteButton = findViewById(R.id.game_menu_trash_icon);
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dbHelper.deleteGame(game_name_string);
-//                gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
+//        Button deleteButton = findViewById(R.id.game_menu_trash_icon);
+//        deleteButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                dbHelper.deleteGame(game_name_string);
+////                gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
+//
+//                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+//                startActivity(intent_back);
+//            }
+//        });
 
-                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
-                startActivity(intent_back);
-            }
-        });
 
-        Button writeScoreButton = findViewById(R.id.button_write_score);
         writeScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +86,7 @@ public class GameMenuActivity extends AppCompatActivity {
             }
         });
 
-        Button leaderboardsButton = findViewById(R.id.button_leaderboards);
+
         leaderboardsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,8 +94,64 @@ public class GameMenuActivity extends AppCompatActivity {
                 startActivity(intent_leaderboards);
             }
         });
-    }
 
+
+//        //Za izračun in nastavitev pravilnih dimenzij obeh gumbov v game menu-ju (se prilagajajo na katerikoli telefon)
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//        int screenHeight = displayMetrics.heightPixels; //od Huawei-ja je 2139
+////        Log.d("Tag", "screenHeight: " + String.valueOf(screenHeight));
+////        int game_menu_image_height = imageMainWallpaper.getHeight();
+//        int toolbar_height = getSupportActionBar().getHeight();
+//
+//        imageMainWallpaper.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                int game_menu_image_height = imageMainWallpaper.getHeight();
+//                // Use the height value as needed
+//                // Remove the listener to avoid multiple callbacks
+//                imageMainWallpaper.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+//            }
+//        });
+//
+////        getSupportActionBar().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+////            @Override
+////            public void onGlobalLayout() {
+////                int game_menu_image_height = imageMainWallpaper.getHeight();
+////                // Use the height value as needed
+////                // Remove the listener to avoid multiple callbacks
+////                imageMainWallpaper.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+////            }
+////        });
+//
+//        int height_of_one_game_menu_button = (int) Math.round(screenHeight - toolbar_height - game_menu_image_height - 3*10)/2;
+//        Log.d("Tag", "screenHeight: " + String.valueOf(screenHeight));
+//        Log.d("Tag", "game_menu_image_height: " + String.valueOf(game_menu_image_height));
+//        Log.d("Tag", "toolbar_height: " + String.valueOf(toolbar_height));
+//        Log.d("Tag", "height_of_one_game_menu_button: " + String.valueOf(height_of_one_game_menu_button));
+//
+//
+//        ViewGroup.LayoutParams writeScoreBtnparams = writeScoreButton.getLayoutParams();
+//        writeScoreBtnparams.height = height_of_one_game_menu_button;
+//        writeScoreButton.setLayoutParams(writeScoreBtnparams);
+////
+////        ViewGroup.LayoutParams params2 = leaderboardsButton.getLayoutParams();
+////        params2.height = height_of_one_game_menu_button;
+////        leaderboardsButton.setLayoutParams(params2);
+
+    }//onCreate
+
+
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//
+////        Button writeScoreButton = findViewById(R.id.button_write_score);
+////        Button leaderboardsButton = findViewById(R.id.button_leaderboards);
+////        imageMainWallpaper = findViewById(R.id.game_menu_image);
+//
+//
+//    }
 
     private void displayPlayersInGame(int gameId) {   // Display all players in the selected game
         Intent intent = new Intent(GameMenuActivity.this, PlayerListActivity.class);
@@ -93,4 +164,25 @@ public class GameMenuActivity extends AppCompatActivity {
         intent.putExtra("game_id", gameId); // Set the game ID as an extra
         startActivity(intent);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_delete) {
+            // Perform delete operation here
+            dbHelper.deleteGame(game_name_string);
+//            gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
+            Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+            startActivity(intent_back);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

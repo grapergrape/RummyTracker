@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import si.uni_lj.fe.tnuv.database.MyDatabaseHelper;
 
@@ -32,6 +33,10 @@ public class AddGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_game);
+
+//        Toolbar toolbarAddGame = (Toolbar) findViewById(R.id.toolbar_add_game);
+//        setSupportActionBar(toolbarAddGame);  //ta ukaz instant crasha celo aplikacijo, ker je v Manifestu izbrana tema (Theme.RummyTracker), KI IMA ŽE app/tool bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbHelper = new MyDatabaseHelper(this);
 

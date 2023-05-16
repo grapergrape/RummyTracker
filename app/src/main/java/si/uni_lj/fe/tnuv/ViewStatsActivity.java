@@ -17,6 +17,8 @@ public class ViewStatsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_stats);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+
         viewAverageScoresButton = findViewById(R.id.view_average_scores_button);
         mostWinsButton = findViewById(R.id.most_wins_button);
 

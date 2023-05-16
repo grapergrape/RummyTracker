@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+    <ImageView
+        android:id="@+id/menu_image"
+        android:src="@drawable/rummy_tracker_wallpaper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true" />
 
     <TextView
         android:id="@+id/choose_game_title"
@@ -15,19 +24,16 @@
         android:text="@string/main_menu_choose_a_game"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menu_image" />
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/menu_image"
+        android:layout_centerHorizontal="true"/>
 
     <ScrollView
-        android:layout_width="365dp"
-        android:layout_height="311dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/choose_game_title"
-        app:layout_constraintVertical_bias="1.0">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/choose_game_title">
 
         <TableLayout
             android:id="@+id/table_layout"
@@ -62,15 +68,6 @@
     </ScrollView>
 
 
-    <ImageView
-        android:id="@+id/menu_image"
-        android:layout_width="367dp"
-        android:layout_height="297dp"
-        android:src="@drawable/rummy_tracker_wallpaper"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_add_game_activity"
@@ -81,8 +78,8 @@
         android:textSize="20sp"
         android:layout_marginTop="4dp"
         android:layout_marginRight="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/menu_image" />
+        android:layout_below="@id/menu_image"
+        android:layout_alignParentRight="true"/>
 
 
 
@@ -127,4 +124,5 @@
     <!--        android:text="Show stats"/>-->
 
     <!--</LinearLayout>-->
-</androidx.constraintlayout.widget.ConstraintLayout>
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+</RelativeLayout>

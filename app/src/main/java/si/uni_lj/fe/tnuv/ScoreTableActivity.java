@@ -1,12 +1,11 @@
 package si.uni_lj.fe.tnuv;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +14,10 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import si.uni_lj.fe.tnuv.database.MyDatabaseHelper;
 import si.uni_lj.fe.tnuv.database.Player;
-public class PlayerListActivity extends AppCompatActivity {
+public class ScoreTableActivity extends AppCompatActivity {
 
     private MyDatabaseHelper dbHelper;
 
@@ -29,9 +27,18 @@ public class PlayerListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player_list);
+        setContentView(R.layout.activity_score_table);
+//        Log.d("Tag","[ScoreTableActivity] testIntVar: " + GameMenuActivity.testIntVar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+//        Log.d("Tag", "to se je zgodilo");
 
         dbHelper = new MyDatabaseHelper(this);
 
@@ -42,7 +49,7 @@ public class PlayerListActivity extends AppCompatActivity {
         List<Player> playerList = dbHelper.getPlayersInGame(gameId);
 
         // Find the layout for adding players
-        LinearLayout playerLayout = findViewById(R.id.players_list_linearlayout);
+        LinearLayout playerLayout = findViewById(R.id.score_table_linearlayout);
 
         // If there are no players in the game, display a message
         if (playerList.isEmpty()) {
@@ -68,7 +75,7 @@ public class PlayerListActivity extends AppCompatActivity {
                 insertScoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(PlayerListActivity.this, InsertScoreActivity.class);
+                        Intent intent = new Intent(ScoreTableActivity.this, InsertScoreActivity.class);
                         intent.putExtra("game_id", gameId);
                         intent.putExtra("player_id", player.getId());
                         intent.putExtra("consecutive_tracker", 1);
@@ -131,7 +138,7 @@ public class PlayerListActivity extends AppCompatActivity {
         addPlayerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(PlayerListActivity.this, AddPlayerActivity.class);
+                Intent intent = new Intent(ScoreTableActivity.this, AddPlayerActivity.class);
                 intent.putExtra("game_id", gameId);
                 startActivity(intent);
             }
@@ -140,7 +147,9 @@ public class PlayerListActivity extends AppCompatActivity {
 
         // Add the button to the layout
         playerLayout.addView(addPlayerButton);
-    }
+
+    } //onStart()
+
 
     @Override
     protected void onDestroy() {

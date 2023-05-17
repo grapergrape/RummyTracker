@@ -197,7 +197,11 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query("games", projection, selection, selectionArgs, null, null, null);
         int gameId = -1;
         if (cursor.moveToFirst()) {
-            gameId = cursor.getInt(cursor.getColumnIndex("id"));
+            if (cursor.getColumnIndex("id") != -1){
+                gameId = cursor.getInt(cursor.getColumnIndex("id"));
+            } else {
+                Log.d("Tag","ERROR: cursor.getColumnIndex(\"id\"):"+cursor.getColumnIndex("id"));
+            }
         }
         cursor.close();
         return gameId;

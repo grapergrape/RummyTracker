@@ -36,7 +36,7 @@ public class AddGameActivity extends AppCompatActivity {
 
 //        Toolbar toolbarAddGame = (Toolbar) findViewById(R.id.toolbar_add_game);
 //        setSupportActionBar(toolbarAddGame);  //ta ukaz instant crasha celo aplikacijo, ker je v Manifestu izbrana tema (Theme.RummyTracker), KI IMA ŽE app/tool bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
         dbHelper = new MyDatabaseHelper(this);
 

@@ -31,6 +31,14 @@ public class AddPlayerActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
         dbHelper = new MyDatabaseHelper(this);
         selectedPlayers = new ArrayList<>();
 
@@ -93,7 +101,9 @@ public class AddPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
+    } //onStart()
+
+
 
     @Override
     protected void onDestroy() {

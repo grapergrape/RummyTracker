@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imageMainWallpaper;    // za glavno ozadje aplikacije
 
+    public static int mainActivityChecker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,10 +166,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mainActivityChecker = 1;
+
+    }
 
 
-
-//    // Display all players in the selected game
+    //    // Display all players in the selected game
 //    private void displayPlayersInGame(int gameId) {
 //        Intent intent = new Intent(MainActivity.this, PlayerListActivity.class);
 //        List<Player> players = dbHelper.getPlayersInGame(gameId);

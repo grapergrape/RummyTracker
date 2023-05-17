@@ -31,17 +31,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity-->
-<!--            android:name=".GameListActivity"-->
-<!--            android:label="Game List" />-->
         <activity
-            android:name=".PlayerListActivity"
-            android:label="Player List"
+            android:name=".ScoreTableActivity"
+            android:label="Score Table"
             android:parentActivityName=".GameMenuActivity" />
         <activity
             android:name=".AddPlayerActivity"
             android:label="Add Player"
-            android:parentActivityName=".PlayerListActivity" />
+            android:parentActivityName=".ScoreTableActivity" />
         <activity
             android:name=".InsertPlayerActivity"
             android:label="Insert Player"

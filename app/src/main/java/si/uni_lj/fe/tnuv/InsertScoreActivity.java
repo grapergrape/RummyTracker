@@ -2,6 +2,8 @@ package si.uni_lj.fe.tnuv;
 
 import android.os.Bundle;
 import android.text.InputFilter;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +24,7 @@ public class InsertScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_score);
+        Log.d("Tag","[InsertScore] {onCreate()}");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
@@ -67,10 +70,55 @@ public class InsertScoreActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    protected void onStart() {
+        Log.d("Tag","[InsertScore] {onStart()}");
+        super.onStart();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        Log.d("Tag","[InsertScore] {onResume()}");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("Tag","[InsertScore] {onPause()}");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("Tag","[InsertScore] {onStop()}");
+        super.onStop();
+    }
+
     @Override
     protected void onDestroy() {
+//        dbHelper.close();
+        Log.d("Tag","[InsertScore] {onDestroy()}");
         super.onDestroy();
-        dbHelper.close();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d("Tag","[InsertScore] {onRestart()}");
+        super.onRestart();
     }
 }
 

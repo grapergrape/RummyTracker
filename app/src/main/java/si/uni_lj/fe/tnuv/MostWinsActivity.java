@@ -1,6 +1,8 @@
 package si.uni_lj.fe.tnuv;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,7 @@ public class MostWinsActivity extends AppCompatActivity {
         dbHelper = new MyDatabaseHelper(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_most_wins);
+        Log.d("Tag","[MostWins] {onCreate()}");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
@@ -32,4 +35,52 @@ public class MostWinsActivity extends AppCompatActivity {
         }
         playerStatsTextView.setText(playerStatsStringBuilder.toString());
     }
+
+
+    @Override
+    protected void onStart() {
+        Log.d("Tag","[MostWins] {onStart()}");
+        super.onStart();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("Tag","[MostWins] {onResume()}");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("Tag","[MostWins] {onPause()}");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("Tag","[MostWins] {onStop()}");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d("Tag","[MostWins] {onDestroy()}");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d("Tag","[MostWins] {onRestart()}");
+        super.onRestart();
+    }
+
 }

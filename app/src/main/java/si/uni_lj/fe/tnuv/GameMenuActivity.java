@@ -32,6 +32,8 @@ public class GameMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_menu);
+        Log.d("Tag","[GameMenu] {onCreate()}");
+
 
 //        testIntVar = 5;
 //        Log.d("Tag","{onCreate()} testIntVar: " + testIntVar);
@@ -39,13 +41,15 @@ public class GameMenuActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
         Intent intent_incoming = getIntent();
-        if(MainActivity.mainActivityChecker == 1) {  //To check-iranje z if-om sm mogu dodat zato, da sem rešil en bug, do katerega je prišlo, ker se ta funkcija onCreate() IZVEDE VSAKIČ, ko se odpre ta aktivnost in ne le prvič in nevem zakaj je to tako ?????
-            game_name_string = intent_incoming.getStringExtra("message_key_1");
-            setTitle(game_name_string);
-            MainActivity.mainActivityChecker=0;
-        }
+//        if(MainActivity.mainActivityChecker == 1) {  //To check-iranje z if-om sm mogu dodat zato, da sem rešil en bug, do katerega je prišlo, ker se ta funkcija onCreate() IZVEDE VSAKIČ, ko se odpre ta aktivnost in ne le prvič in nevem zakaj je to tako -> ZA TO je kriv gumb za nazaj v orodni vrstici, saj izvede 4 funkcije in sicer najprej aktivnost v katero nameravaš iti izbriše, nato jo kreaira (onCreate), nato pa še štarta (onStart), zatem pa še izbriše (onDestroy) aktivnsot v kateri si bil. Če greš pa nazaj preko gumba za nazaj od telefona, se pa onCreate() ne izvede, ampak se izvede le onStart()
+//            game_name_string = intent_incoming.getStringExtra("message_key_1");
+//            setTitle(game_name_string);
+//            MainActivity.mainActivityChecker=0;
+//        }
+        game_name_string = intent_incoming.getStringExtra("message_key_1");
+        setTitle(game_name_string);
 
-        Log.d("Tag","{onCreate()} game_name_string: " + game_name_string);
+//        Log.d("Tag","{onCreate()} game_name_string: " + game_name_string);
 
 //        //Za izračun in nastavitev pravilnih dimenzij obeh gumbov v game menu-ju (se prilagajajo na katerikoli telefon)
 //        DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -97,6 +101,8 @@ public class GameMenuActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("Tag","[GameMenu] {onStart()}");
+
 //        String game_name_string;
 
         Button writeScoreButton = findViewById(R.id.button_write_score);
@@ -110,7 +116,7 @@ public class GameMenuActivity extends AppCompatActivity {
 
         Intent intent_incoming = getIntent();
 //        game_name_string = intent_incoming.getStringExtra("message_key_1");
-        Log.d("Tag","{onStart()} game_name_string: " + game_name_string);
+//        Log.d("Tag","{onStart()} game_name_string: " + game_name_string);
 
 
 //        Log.d("Tag","{onStart()} testIntVar: " + String.valueOf(testIntVar));
@@ -139,7 +145,7 @@ public class GameMenuActivity extends AppCompatActivity {
         writeScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("Tag","{onStart()} WrtScrBtn: game_name_string: " + game_name_string);
+//                Log.d("Tag","{onStart()} WrtScrBtn: game_name_string: " + game_name_string);
                 int gameId = dbHelper.getGameId(game_name_string);
                 displayPlayersInGame(gameId);
 
@@ -150,14 +156,14 @@ public class GameMenuActivity extends AppCompatActivity {
         });
 
 
-//        leaderboardsButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent_leaderboards = new Intent(GameMenuActivity.this, ViewStatsActivity.class);   //Intent(kdo kliče, koga kliče)
-//                startActivity(intent_leaderboards);
-//
-//            }
-//        });
+        leaderboardsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent_leaderboards = new Intent(GameMenuActivity.this, ViewStatsActivity.class);   //Intent(kdo kliče, koga kliče)
+                startActivity(intent_leaderboards);
+
+            }
+        });
 
     }
 
@@ -174,23 +180,73 @@ public class GameMenuActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) { //sem rabil za kreiranje trash/delete button-a v toolbar-u
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+    public boolean onCreateOptionsMenu(Menu menu) { //za prikaz trash/delete button-a v toolbar-u
+        getMenuInflater().inflate(R.menu.menu_main, menu); //(izbere menu xml file v mapi res/menu/menu_main.xml)
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_delete) {
-            // Perform delete operation here
-            dbHelper.deleteGame(game_name_string);
-//            gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
-            Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
-            startActivity(intent_back);
-            return true;
+        switch (item.getItemId()){
+            case R.id.action_delete:  //tukaj pred R.id ne potrebuješ napisati še "android", ker je "R.id.action_delete" id od enega item-a (trash icon button) iz xml definiranega menuja (sem ga sam definiral/ustvaril)
+                // Perform delete operation here
+                dbHelper.deleteGame(game_name_string);
+//            gameTableLayout.removeView(row);  //TEGA za brisanje trenutne igre iz sql databaze SPLOH NE RABIM  :) :) :)
+                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+                startActivity(intent_back);
+                return true;
+            case android.R.id.home: //tu je pa potrebno spredaj napisati android, ker se item z id-jem "R.id.home" ne nahaja v nobeni moji mapi, ampak (verjetno) v neki standardni android knjižnici al nekj podobnega
+                                    //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+                this.finish();
+                return true;
         }
+
+//        int id = item.getItemId();
+//        if (id == R.id.action_delete) {   //s tem poveš kaj naj trash icon button v toolbar-u naredi
+//            // Perform delete operation here
+//            dbHelper.deleteGame(game_name_string);
+////            gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
+//            Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+//            startActivity(intent_back);
+//            return true;
+//        }
+//        if (id == android.R.id.home) {   //s tem poveš kaj naj trash icon button v toolbar-u naredi
+//            this.finish();
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
+
+
+
+    @Override
+    protected void onResume() {
+        Log.d("Tag","[GameMenu] {onResume()}");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("Tag","[GameMenu] {onPause()}");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("Tag","[GameMenu] {onStop()}");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {  //NEVEM zakaj bi v tej situaciji/taki aktivnosti rabil to funkcijo
+        Log.d("Tag","[GameMenu] {onDestroy()}");
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d("Tag","[GameMenu] {onRestart()}");
+        super.onRestart();
+    }
 }

@@ -1,3 +1,13 @@
+/* RAZLAGE
+
+- GUMB ZA NAZAJ V ORODNI VRSTICI izvede 4 funkcije in sicer najprej aktivnost v katero nameravaš iti izbriše, nato jo kreaira (onCreate), nato pa še štarta (onStart), zatem pa še izbriše (onDestroy) aktivnsot v kateri si bil. Če greš pa nazaj preko gumba za nazaj od telefona, se pa onCreate() ne izvede, ampak se izvede le onStart()
+
+
+*/
+
+
+
+
 package si.uni_lj.fe.tnuv;
 
 
@@ -47,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("Tag","[Main] {onCreate()}");
+
 
         // ZA glavno ozadje aplikacije
         imageMainWallpaper = findViewById(R.id.menu_image);
@@ -169,8 +181,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("Tag","[Main] {onStart()}");
 
-        mainActivityChecker = 1;
+//        mainActivityChecker = 1;
+
 
     }
 
@@ -191,72 +205,36 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    @Override
+    protected void onResume() {
+        Log.d("Tag","[Main] {onResume()}");
+        super.onResume();
+    }
 
     @Override
-    protected void onDestroy() {
-        dbHelper.close();
+    protected void onPause() {
+        Log.d("Tag","[Main] {onPause()}");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("Tag","[Main] {onStop()}");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {  //NEVEM zakaj bi v tej situaciji/taki aktivnosti rabil to funkcijo
+//        dbHelper.close();
+        Log.d("Tag","[Main] {onDestroy()}");
         super.onDestroy();
     }
 
-
-
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        dbHelper = new MyDatabaseHelper(this);
-//
-//        gameNameEditText = findViewById(R.id.game_name_edittext);
-//        insertButton = findViewById(R.id.insert_button);
-//        allGamesButton = findViewById(R.id.all_games_button);
-//        viewStatsButton = findViewById(R.id.stats_button);
-//
-//        insertButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String gameName = gameNameEditText.getText().toString().trim();
-//
-//                if (gameName.isEmpty()) {
-//                    Toast.makeText(MainActivity.this, "Please enter a game name", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                if (!dbHelper.isGameNameUnique(gameName)) {
-//                    Toast.makeText(MainActivity.this, "A game with that name already exists. Please choose a different name.", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                dbHelper.insertGame(gameName);
-//
-//                Toast.makeText(MainActivity.this, "Game inserted into database", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-////        allGamesButton.setOnClickListener(new View.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                Intent intent = new Intent(MainActivity.this, GameListActivity.class);
-////                startActivity(intent);
-////            }
-////        });
-//
-//        viewStatsButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, ViewStatsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//    }
-//
-//
-//    @Override
-//    protected void onDestroy() {
-//        dbHelper.close();
-//        super.onDestroy();
-//    }
+    @Override
+    protected void onRestart() {
+        Log.d("Tag","[Main] {onRestart()}");
+        super.onRestart();
+    }
 
 
 }

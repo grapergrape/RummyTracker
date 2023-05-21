@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -28,6 +29,7 @@ public class ScoreTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_table);
+        Log.d("Tag","[ScoreTable] {onCreate()}");
 //        Log.d("Tag","[ScoreTableActivity] testIntVar: " + GameMenuActivity.testIntVar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
@@ -37,8 +39,7 @@ public class ScoreTableActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-//        Log.d("Tag", "to se je zgodilo");
+        Log.d("Tag","[ScoreTable] {onStart()}");
 
         dbHelper = new MyDatabaseHelper(this);
 
@@ -152,9 +153,47 @@ public class ScoreTableActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("Tag","[ScoreTable] {onResume()}");
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d("Tag","[ScoreTable] {onPause()}");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("Tag","[ScoreTable] {onStop()}");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {  //NEVEM zakaj bi v tej situaciji/taki aktivnosti rabil to funkcijo
+        Log.d("Tag","[ScoreTable] {onDestroy()}");
         super.onDestroy();
     }
+
+    @Override
+    protected void onRestart() {
+        Log.d("Tag","[ScoreTable] {onRestart()}");
+        super.onRestart();
+    }
+
+
+
 }
 
 

@@ -41,9 +41,7 @@ import si.uni_lj.fe.tnuv.database.Player;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private EditText gameNameEditText;
-//    private Button insertButton;
-//    private Button allGamesButton;
+
     private Button addGameActivityButton;
     private MyDatabaseHelper dbHelper;
     private TableLayout gameTableLayout;
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("Tag","[Main] {onCreate()}");
 
 
-        // ZA glavno ozadje aplikacije
         imageMainWallpaper = findViewById(R.id.menu_image);
         imageMainWallpaper.setImageResource(R.drawable.rummy_tracker_wallpaper);
 
@@ -74,34 +71,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         gameTableLayout = findViewById(R.id.table_layout);
-//        Log.d("Tag", "gameTableLayout: " + gameTableLayout);
         List<Game> gameList = dbHelper.getAllGames();
 
         for (Game game : gameList) {
             TableRow row = new TableRow(this);
 
-//            TextView gameNameView = new TextView(this);
-////            gameNameView.setGravity(Gravity.CENTER);
-//            String statusText = game.getStatus() == 0 ? "Active" : "Finished";
-////            gameNameView.setText(game.getName() + " (" + statusText + ")");
-//            gameNameView.setText(game.getName());
-//            gameNameView.setTextSize(20); // Set the text size in pixels
-////            gameNameView.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f));
-//            TableRow.LayoutParams tableRowParams  = new TableRow.LayoutParams();
-////            tableRowParams.column = 2;  // Set the view to be in the second column
-////            tableRowParams.span = 2;    // Span the view across two columns
-////            tableRowParams.weight = 1;  // Assign a weight to the view
-//            tableRowParams.height=130;
-////            tableRowParams.width=params.WRAP_CONTENT;
-//            tableRowParams.gravity = Gravity.CENTER;  // Set the gravity of the view within its cell
-//            gameNameView.setLayoutParams(tableRowParams);
-//
-//            // Add an OnClickListener to the game name view to display players in the game
-//            gameNameView.setOnClickListener(v -> {
-//                int gameId = dbHelper.getGameId(game.getName());
-//                displayPlayersInGame(gameId);
-//            });
-//            row.addView(gameNameView);
+
 
             Button gameNameButton = new Button(this);
             gameNameButton.setText(game.getName());
@@ -115,21 +90,18 @@ public class MainActivity extends AppCompatActivity {
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int screenWidth = displayMetrics.widthPixels; //od Huawei-ja je 1080
             double game_btn_screen_ratio = 0.65;
-//            Log.d("Tag", "screenWidth: " + String.valueOf(screenWidth));
-//            Log.d("Tag", "game_btn_screen_ratio*screenWidth: " + (int) Math.round(game_btn_screen_ratio * screenWidth));
+
 
             TableRow.LayoutParams tableRowParams  = new TableRow.LayoutParams((int) Math.round(game_btn_screen_ratio * screenWidth),
                     TableRow.LayoutParams.WRAP_CONTENT);
             tableRowParams.height=130;
 
 
-//            tableRowParams.setMargins(200, 5, 0, 5); // Set bottom margin of 16 pixels
+
             int game_btn_left_margin = (int) Math.round((1-game_btn_screen_ratio)/2*screenWidth);
-//            Log.d("Tag", "game_btn_left_margin: " + game_btn_left_margin);
             tableRowParams.setMargins(game_btn_left_margin, 5, 0, 5);
 
-//            tableRowParams.gravity = Gravity.CENTER;  //set the gravity of the view within its cell
-//            tableRowParams.column=3;
+
             gameNameButton.setLayoutParams(tableRowParams);
             gameNameButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -137,42 +109,16 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, GameMenuActivity.class);   //Intent(kdo kliče, koga kliče)
                     intent.putExtra("message_key_1", game.getName());
                     intent.putExtra("message_key_2", R.id.table_layout);
-//                    intent.putExtra("message_key_3", (CharSequence) row);  //TOLE POVZORČI IMMEDIATE CRASHDOWN
-//                    Log.d("Tag", "row: " + row);
+
                     startActivity(intent);
 
-//                    int gameId = dbHelper.getGameId(game.getName());
-//                    displayPlayersInGame(gameId);
                 }
             });
             row.addView(gameNameButton);
 
 
-//            Button deleteButton = new Button(this);
-//            deleteButton.setText("D");
-//            deleteButton.setLayoutParams(new TableRow.LayoutParams());
-//            deleteButton.setOnClickListener(v -> {
-//                dbHelper.deleteGame(game.getName());
-//                gameTableLayout.removeView(row);
-//            });
-//            row.addView(deleteButton);
 
 
-
-
-//            Button statusButton = new Button(this);
-//            statusButton.setText("Change Status");
-//            statusButton.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-
-//            statusButton.setOnClickListener(v -> {
-//                dbHelper.changeStatus(game.getName());
-//                int newStatus = game.getStatus() == 0 ? 1 : 0;
-//                game.setStatus(newStatus);
-//                String newStatusText = newStatus == 0 ? "Active" : "Finished";
-//                gameNameView.setText(game.getName() + " (" + newStatusText + ")");
-//            });
-
-//            row.addView(statusButton);
 
             gameTableLayout.addView(row);
         }
@@ -183,24 +129,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Log.d("Tag","[Main] {onStart()}");
 
-//        mainActivityChecker = 1;
 
 
     }
 
 
-    //    // Display all players in the selected game
-//    private void displayPlayersInGame(int gameId) {
-//        Intent intent = new Intent(MainActivity.this, PlayerListActivity.class);
-//        List<Player> players = dbHelper.getPlayersInGame(gameId);
-//        if (players.size() == 0) {
-//            intent.putExtra("noPlayers", true);
-//        } else {
-//            intent.putExtra("playersList", (java.io.Serializable) players);
-//        }
-//        intent.putExtra("game_id", gameId); // Set the game ID as an extra
-//        startActivity(intent);
-//    }
+
 
 
 

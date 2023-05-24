@@ -11,6 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RummyTracker"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false"
         tools:targetApi="31">
 <!--        android:theme="@style/Theme.AppCompat.Light.NoActionBar"-->
 

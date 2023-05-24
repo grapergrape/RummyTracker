@@ -1,128 +1,79 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <ImageView
-        android:id="@+id/menu_image"
-        android:src="@drawable/rummy_tracker_wallpaper"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/choose_game_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_menu_choose_a_game"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/menu_image"
-        android:layout_centerHorizontal="true"/>
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-    <ScrollView
+            <ImageView
+                android:id="@+id/menu_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="fitStart"
+                android:src="@drawable/rummy_tracker_wallpaper"
+                android:adjustViewBounds="true"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.9" />
+
+            <TextView
+                android:id="@+id/choose_game_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/menu_image"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/main_menu_choose_a_game"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/choose_game_title">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TableLayout
-            android:id="@+id/table_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="0dp"
-            app:layout_constraintTop_toBottomOf="@+id/choose_game_title">
+            android:layout_height="wrap_content">
 
-            <TableRow
-                android:id="@+id/table_row_header"
+            <TableLayout
+                android:id="@+id/table_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:layout_editor_absoluteX="-4dp"
-                tools:layout_editor_absoluteY="384dp">
+                android:layout_marginTop="0dp">
 
-                <!--            <TextView-->
-                <!--                android:id="@+id/table_header_name"-->
-                <!--                android:layout_width="0dp"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_weight="1"-->
-                <!--                android:text="Name"-->
-                <!--                android:textStyle="bold" />-->
+            </TableLayout>
 
-            </TableRow>
-
-            <!--        <View-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="3dp"-->
-            <!--            android:background="@android:color/darker_gray" />-->
-
-        </TableLayout>
-    </ScrollView>
-
-
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <Button
         android:id="@+id/btn_add_game_activity"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="4dp"
         android:background="@drawable/button_style_add_game_activity"
         android:text="+"
         android:textSize="20sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_below="@id/menu_image"
-        android:layout_alignParentRight="true"/>
+        app:layout_anchor="@id/app_bar_layout"
+        app:layout_anchorGravity="bottom|end" />
 
-
-
-
-
-
-
-
-
-
-
-    <!--<?xml version="1.0" encoding="utf-8"?>-->
-    <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--    xmlns:tools="http://schemas.android.com/tools"-->
-    <!--    android:orientation="vertical"-->
-    <!--    android:layout_width="match_parent"-->
-    <!--    android:layout_height="match_parent"-->
-    <!--    tools:context=".MainActivity">-->
-    <!--    -->
-    <!--    <EditText-->
-    <!--        android:id="@+id/game_name_edittext"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:hint="Enter game name"/>-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/insert_button"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Insert a new game"/>-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/all_games_button"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Show all games"/>-->
-
-    <!--    <Button-->
-    <!--        android:id="@+id/stats_button"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Show stats"/>-->
-
-    <!--</LinearLayout>-->
-<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

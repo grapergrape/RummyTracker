@@ -24,9 +24,9 @@ public class InsertScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_score);
-        Log.d("Tag","[InsertScore] {onCreate()}");
+        Log.d("Tag", "[InsertScore] {onCreate()}");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  // For up action (go back) button in the toolbar
 
         dbHelper = new MyDatabaseHelper(this);
 
@@ -38,7 +38,7 @@ public class InsertScoreActivity extends AppCompatActivity {
         EditText scoreEditText = findViewById(R.id.score_edittext);
 
         // Set a filter on the EditText to only allow integers as input
-        scoreEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299") });
+        scoreEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
 
         // Find the submit button and set the onClickListener
         Button submitButton = findViewById(R.id.submit_button);
@@ -63,6 +63,17 @@ public class InsertScoreActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Check if any other player has a score of 0 for the session
+                boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
+                if (score == 0) {
+                    if (isSessionZeroScored) {
+                        // Prompt the user to rewrite the score because someone else has a score of 0 for the session
+                        Toast.makeText(InsertScoreActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
+
                 // Insert the score into the database
                 dbHelper.insertGameScore(gameId, playerId, score);
                 // Finish the activity
@@ -70,6 +81,7 @@ public class InsertScoreActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
     @Override

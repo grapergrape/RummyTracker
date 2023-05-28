@@ -35,64 +35,11 @@ public class GameMenuActivity extends AppCompatActivity {
         Log.d("Tag","[GameMenu] {onCreate()}");
 
 
-//        testIntVar = 5;
-//        Log.d("Tag","{onCreate()} testIntVar: " + testIntVar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
 
         Intent intent_incoming = getIntent();
-//        if(MainActivity.mainActivityChecker == 1) {  //To check-iranje z if-om sm mogu dodat zato, da sem rešil en bug, do katerega je prišlo, ker se ta funkcija onCreate() IZVEDE VSAKIČ, ko se odpre ta aktivnost in ne le prvič in nevem zakaj je to tako -> ZA TO je kriv gumb za nazaj v orodni vrstici, saj izvede 4 funkcije in sicer najprej aktivnost v katero nameravaš iti izbriše, nato jo kreaira (onCreate), nato pa še štarta (onStart), zatem pa še izbriše (onDestroy) aktivnsot v kateri si bil. Če greš pa nazaj preko gumba za nazaj od telefona, se pa onCreate() ne izvede, ampak se izvede le onStart()
-//            game_name_string = intent_incoming.getStringExtra("message_key_1");
-//            setTitle(game_name_string);
-//            MainActivity.mainActivityChecker=0;
-//        }
         game_name_string = intent_incoming.getStringExtra("message_key_1");
         setTitle(game_name_string);
-
-//        Log.d("Tag","{onCreate()} game_name_string: " + game_name_string);
-
-//        //Za izračun in nastavitev pravilnih dimenzij obeh gumbov v game menu-ju (se prilagajajo na katerikoli telefon)
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//        int screenHeight = displayMetrics.heightPixels; //od Huawei-ja je 2139
-////        Log.d("Tag", "screenHeight: " + String.valueOf(screenHeight));
-////        int game_menu_image_height = imageMainWallpaper.getHeight();
-//        int toolbar_height = getSupportActionBar().getHeight();
-//
-//        imageMainWallpaper.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                int game_menu_image_height = imageMainWallpaper.getHeight();
-//                // Use the height value as needed
-//                // Remove the listener to avoid multiple callbacks
-//                imageMainWallpaper.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//            }
-//        });
-//
-////        getSupportActionBar().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-////            @Override
-////            public void onGlobalLayout() {
-////                int game_menu_image_height = imageMainWallpaper.getHeight();
-////                // Use the height value as needed
-////                // Remove the listener to avoid multiple callbacks
-////                imageMainWallpaper.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-////            }
-////        });
-//
-//        int height_of_one_game_menu_button = (int) Math.round(screenHeight - toolbar_height - game_menu_image_height - 3*10)/2;
-//        Log.d("Tag", "screenHeight: " + String.valueOf(screenHeight));
-//        Log.d("Tag", "game_menu_image_height: " + String.valueOf(game_menu_image_height));
-//        Log.d("Tag", "toolbar_height: " + String.valueOf(toolbar_height));
-//        Log.d("Tag", "height_of_one_game_menu_button: " + String.valueOf(height_of_one_game_menu_button));
-//
-//
-//        ViewGroup.LayoutParams writeScoreBtnparams = writeScoreButton.getLayoutParams();
-//        writeScoreBtnparams.height = height_of_one_game_menu_button;
-//        writeScoreButton.setLayoutParams(writeScoreBtnparams);
-////
-////        ViewGroup.LayoutParams params2 = leaderboardsButton.getLayoutParams();
-////        params2.height = height_of_one_game_menu_button;
-////        leaderboardsButton.setLayoutParams(params2);
 
     }//onCreate
 
@@ -115,33 +62,7 @@ public class GameMenuActivity extends AppCompatActivity {
 
 
         Intent intent_incoming = getIntent();
-//        game_name_string = intent_incoming.getStringExtra("message_key_1");
-//        Log.d("Tag","{onStart()} game_name_string: " + game_name_string);
-
-
-//        Log.d("Tag","{onStart()} testIntVar: " + String.valueOf(testIntVar));
-
-
-
-////        gameTableLayout = (TableLayout) intent.getCharExtra("message_key_2");
-//        table_layout_id = intent.getIntExtra("message_key_2",0);
-//        gameTableLayout = findViewById(table_layout_id);
-
         TableRow row = (TableRow) intent_incoming.getCharSequenceExtra("message_key_3");
-
-//        Button deleteButton = findViewById(R.id.game_menu_trash_icon);
-//        deleteButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dbHelper.deleteGame(game_name_string);
-////                gameTableLayout.removeView(row);  //TEGA za brisanje SPLOH NE RABIM  :) :) :)
-//
-//                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
-//                startActivity(intent_back);
-//            }
-//        });
-
-
         writeScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,9 +70,6 @@ public class GameMenuActivity extends AppCompatActivity {
                 int gameId = dbHelper.getGameId(game_name_string);
                 displayPlayersInGame(gameId);
 
-//                Intent intent_write_score = new Intent(GameMenuActivity.this, PlayerListActivity.class);   //Intent(kdo kliče, koga kliče)
-//                intent_write_score.putExtra("message_key_4", )
-//                startActivity(intent_write_score);
             }
         });
 

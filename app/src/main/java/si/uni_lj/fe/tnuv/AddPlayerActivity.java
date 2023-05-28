@@ -40,7 +40,7 @@ public class AddPlayerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("Tag","[AddPlayer] {onStart()}");
+        Log.d("Tag", "[AddPlayer] {onStart()}");
 
         dbHelper = new MyDatabaseHelper(this);
         selectedPlayers = new ArrayList<>();
@@ -76,7 +76,6 @@ public class AddPlayerActivity extends AppCompatActivity {
             }
         });
 
-
         // Find the button to add the selected players to the game and set its click listener
         Button addButton = findViewById(R.id.add_players_button);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +103,23 @@ public class AddPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    } //onStart()
+
+        // Find the button to delete a player and set its click listener
+        Button deleteButton = findViewById(R.id.delete_player_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedPlayers.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please select at least one player to delete", Toast.LENGTH_SHORT).show();
+                } else {
+                    dbHelper.deletePlayersAndScores(selectedPlayers);
+                    Toast.makeText(getApplicationContext(), "Players and their scores deleted", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
+    }
+
 
 
 

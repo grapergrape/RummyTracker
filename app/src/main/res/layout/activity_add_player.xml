@@ -31,4 +31,11 @@
         android:layout_marginTop="8dp"
         android:text="Insert a new player" />
 
+    <Button
+        android:id="@+id/delete_player_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Delete selected players" />
+
 </LinearLayout>

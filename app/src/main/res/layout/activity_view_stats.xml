@@ -17,4 +17,12 @@
         android:layout_height="wrap_content"
         android:text="Most Wins"/>
 
+    <ListView
+        android:id="@+id/score_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"/>
+
 </LinearLayout>
+

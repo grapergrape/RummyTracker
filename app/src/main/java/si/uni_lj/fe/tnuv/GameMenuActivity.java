@@ -108,7 +108,8 @@ public class GameMenuActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.action_delete:  //tukaj pred R.id ne potrebuješ napisati še "android", ker je "R.id.action_delete" id od enega item-a (trash icon button) iz xml definiranega menuja (sem ga sam definiral/ustvaril)
                 // Perform delete operation here
-                dbHelper.deleteGame(game_name_string);
+                int gameId = dbHelper.getGameId(game_name_string);
+                dbHelper.deleteGameAndScores(gameId);
 //            gameTableLayout.removeView(row);  //TEGA za brisanje trenutne igre iz sql databaze SPLOH NE RABIM  :) :) :)
                 Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
                 startActivity(intent_back);

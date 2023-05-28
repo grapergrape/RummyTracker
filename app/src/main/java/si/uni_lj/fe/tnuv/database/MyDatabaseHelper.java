@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -71,6 +73,45 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to upgrade the database schema, modify this method
+    }
+
+    public boolean isMaxConsecutiveTrackerFullyScored(int gameId) {
+        List<Player> playerList = getPlayersInGame(gameId); // Retrieve the player list for the game
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query to retrieve the highest consecutive tracker for the given game ID
+        String query = "SELECT MAX(" + COLUMN_CONSECUTIVE_TRACKER + ") AS max_consecutive_tracker" +
+                " FROM " + TABLE_GAME_SCORES +
+                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
+                " WHERE game_players.game_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(gameId)});
+        int maxConsecutiveTracker = 0;
+        if (cursor.moveToFirst()) {
+            maxConsecutiveTracker = cursor.getInt(cursor.getColumnIndex("max_consecutive_tracker"));
+        }
+        cursor.close();
+
+        // Query to check if each player has an inserted score instance for the maximum consecutive tracker
+        query = "SELECT COUNT(*) AS count" +
+                " FROM " + TABLE_GAME_SCORES +
+                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
+                " WHERE game_players.game_id = ?" +
+                " AND " + COLUMN_CONSECUTIVE_TRACKER + " = ?";
+
+        cursor = db.rawQuery(query, new String[]{String.valueOf(gameId), String.valueOf(maxConsecutiveTracker)});
+
+        boolean isMaxConsecutiveTrackerFullyScored = false;
+        if (cursor.moveToFirst()) {
+            int count = cursor.getInt(cursor.getColumnIndex("count"));
+            isMaxConsecutiveTrackerFullyScored = count == playerList.size();
+        }
+
+        cursor.close();
+        db.close();
+
+        return isMaxConsecutiveTrackerFullyScored;
     }
 
     public boolean isSessionZeroScored(int gameId) {
@@ -146,8 +187,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return isSessionZeroScored;
     }
-
-
 
     public void editGameScore(int gameId, int playerId, int consecutiveTracker, int newScore) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -376,6 +415,45 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
     }
+    public void deletePlayersAndScores(List<String> playerNicknames) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Delete the players from the players table
+        String deletePlayerSql = "DELETE FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_NICKNAME + " IN (" +
+                TextUtils.join(",", Collections.nCopies(playerNicknames.size(), "?")) + ")";
+        db.execSQL(deletePlayerSql, playerNicknames.toArray(new String[0]));
+
+        // Delete the game scores tied to the players
+        String deleteScoresSql = "DELETE FROM game_scores WHERE game_player_id IN " +
+                "(SELECT rowid FROM game_players WHERE player_id IN " +
+                "(SELECT " + COLUMN_PLAYER_ID + " FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_NICKNAME + " IN (" +
+                TextUtils.join(",", Collections.nCopies(playerNicknames.size(), "?")) + ")))";
+        db.execSQL(deleteScoresSql, playerNicknames.toArray(new String[0]));
+
+        // Delete the players from the game_players table
+        String deleteGamePlayersSql = "DELETE FROM game_players WHERE player_id IN " +
+                "(SELECT " + COLUMN_PLAYER_ID + " FROM " + TABLE_PLAYERS + " WHERE " + COLUMN_PLAYER_NICKNAME + " IN (" +
+                TextUtils.join(",", Collections.nCopies(playerNicknames.size(), "?")) + "))";
+        db.execSQL(deleteGamePlayersSql, playerNicknames.toArray(new String[0]));
+    }
+
+    public void deleteGameAndScores(int gameId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Delete the game from the games table
+        String deleteGameSql = "DELETE FROM games WHERE id = ?";
+        db.execSQL(deleteGameSql, new String[]{String.valueOf(gameId)});
+
+        // Delete the game scores tied to the game
+        String deleteScoresSql = "DELETE FROM game_scores WHERE game_player_id IN " +
+                "(SELECT rowid FROM game_players WHERE game_id = ?)";
+        db.execSQL(deleteScoresSql, new String[]{String.valueOf(gameId)});
+
+        // Delete the game players tied to the game
+        String deletePlayersSql = "DELETE FROM game_players WHERE game_id = ?";
+        db.execSQL(deletePlayersSql, new String[]{String.valueOf(gameId)});
+    }
+
 
     public void changeStatus(String name) {
         SQLiteDatabase db = getWritableDatabase();
@@ -758,6 +836,56 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         return player;
+    }
+    // Method to retrieve the list of top 10 highest score insertions
+    public List<ScoreInstance> getTop10HighestScoreInstances() {
+        List<ScoreInstance> scoreInstances = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT " + TABLE_PLAYERS + "." + COLUMN_PLAYER_NICKNAME + ", " + TABLE_GAME_SCORES + "." + COLUMN_SCORE
+                + " FROM " + TABLE_GAME_SCORES
+                + " JOIN game_players ON " + TABLE_GAME_SCORES + "." + COLUMN_GAME_PLAYER_ID + " = game_players.rowid"
+                + " JOIN " + TABLE_PLAYERS + " ON game_players.player_id = " + TABLE_PLAYERS + "." + COLUMN_PLAYER_ID
+                + " ORDER BY " + TABLE_GAME_SCORES + "." + COLUMN_SCORE + " DESC"
+                + " LIMIT 10";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String nickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+                int score = cursor.getInt(cursor.getColumnIndex(COLUMN_SCORE));
+
+                ScoreInstance scoreInstance = new ScoreInstance(nickname, score);
+                scoreInstances.add(scoreInstance);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return scoreInstances;
+    }
+
+
+
+    // Inner class to represent a score instance
+    public static class ScoreInstance {
+        private String nickname;
+        private int score;
+
+        public ScoreInstance(String nickname, int score) {
+            this.nickname = nickname;
+            this.score = score;
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public int getScore() {
+            return score;
+        }
     }
 }
 

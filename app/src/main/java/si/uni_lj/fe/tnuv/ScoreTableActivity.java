@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -87,21 +89,18 @@ public class ScoreTableActivity extends AppCompatActivity {
                 playerTextView.setTypeface(null, Typeface.BOLD);
                 playerInfoLayout.addView(playerTextView);
 
-                TextView scoreField = new TextView(this);
-                scoreField.setText("Click to Insert Score");
-                scoreField.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                scoreField.setOnClickListener(new View.OnClickListener() {
+                Button scoreButton = new Button(this);
+                scoreButton.setText("Click to Insert Score");
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(150), LinearLayout.LayoutParams.WRAP_CONTENT);
+                scoreButton.setLayoutParams(params);
+                scoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // Handle score insertion here
-                        Intent intent = new Intent(ScoreTableActivity.this, InsertScoreActivity.class);
-                        intent.putExtra("game_id", gameId);
-                        intent.putExtra("player_id", player.getId());
-                        intent.putExtra("consecutive_tracker", 1);
-                        startActivity(intent);
+                        showInsertScoreDialog(gameId, player.getId());
                     }
                 });
-                playerInfoLayout.addView(scoreField);
+                playerInfoLayout.addView(scoreButton);
 
                 // Get the player's scores for the game
                 List<HashMap<String, Object>> scores = dbHelper.getPlayerScoresForGame(player.getId(), gameId);
@@ -119,7 +118,7 @@ public class ScoreTableActivity extends AppCompatActivity {
                         sessionLayout.setOrientation(LinearLayout.VERTICAL);
 
                         TextView sessionTextView = new TextView(this);
-                        sessionTextView.setText("Session " + score.get("consecutive_tracker") + ": ");
+                        sessionTextView.setText(" ");
                         sessionTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
                         sessionLayout.addView(sessionTextView);
 
@@ -154,6 +153,126 @@ public class ScoreTableActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
+    }
+
+
+    // Method to show the dialog for editing a score
+    private void showEditScoreDialog(int gameId, int playerId, int consecutiveTracker) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Score");
+        builder.setMessage("Enter the new score:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newScoreString = input.getText().toString();
+                if (!newScoreString.isEmpty()) {
+                    int newScore = Integer.parseInt(newScoreString);
+                    boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
+
+                    if (newScore == 0 && isSessionZeroScored) {
+                        // Prompt the user to rewrite the score because someone else has a score of 0 for the session
+                        Toast.makeText(ScoreTableActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        dbHelper.editGameScore(gameId, playerId, consecutiveTracker, newScore);
+                        refreshScoreTable();
+                    }
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Method to show the dialog for confirming score deletion
+    private void showConfirmDeleteDialog(int gameId, int playerId, int consecutiveTracker) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Delete");
+        builder.setMessage("Are you sure you want to delete this score?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dbHelper.removeGameScore(gameId, playerId, consecutiveTracker);
+                refreshScoreTable();
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Method to show the dialog for inserting a score
+    private void showInsertScoreDialog(int gameId, int playerId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Insert Score");
+        builder.setMessage("Enter the score:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String scoreString = input.getText().toString();
+                if (!scoreString.isEmpty()) {
+                    int score = Integer.parseInt(scoreString);
+                    boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
+
+                    if (score == 0) {
+                        if (isSessionZeroScored){
+                        // Prompt the user to rewrite the score because someone else has a score of 0 for the session
+                            Toast.makeText(ScoreTableActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    dbHelper.insertGameScore(gameId, playerId, score);
+                    refreshScoreTable();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    // Method to refresh the score table after a change is made
+    private void refreshScoreTable() {
+        onStart(); // Re-fetch the data and redraw the score table
     }
 
 

@@ -1,7 +1,9 @@
 package si.uni_lj.fe.tnuv;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -107,15 +109,59 @@ public class GameMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_delete:  //tukaj pred R.id ne potrebuješ napisati še "android", ker je "R.id.action_delete" id od enega item-a (trash icon button) iz xml definiranega menuja (sem ga sam definiral/ustvaril)
-                // Perform delete operation here
-                int gameId = dbHelper.getGameId(game_name_string);
-                dbHelper.deleteGameAndScores(gameId);
+
+
+
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Confirmation");
+                builder.setMessage("Are you sure you want to delete this game?");
+
+                // Set positive button and its click listener
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked "Yes"
+                        // Perform the desired action
+                        // Perform delete operation here
+                        int gameId = dbHelper.getGameId(game_name_string);
+                        dbHelper.deleteGameAndScores(gameId);
 //            gameTableLayout.removeView(row);  //TEGA za brisanje trenutne igre iz sql databaze SPLOH NE RABIM  :) :) :)
-                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
-                startActivity(intent_back);
+                        Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+                        startActivity(intent_back);
+
+                    }
+                });
+
+                // Set negative button and its click listener
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // User clicked "No"
+                        // Perform any necessary action or simply dismiss the dialog
+                        dialog.dismiss();
+                    }
+                });
+
+                // Create and show the dialog
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+
+
+
+
+
+//                // Perform delete operation here
+//                int gameId = dbHelper.getGameId(game_name_string);
+//                dbHelper.deleteGameAndScores(gameId);
+////            gameTableLayout.removeView(row);  //TEGA za brisanje trenutne igre iz sql databaze SPLOH NE RABIM  :) :) :)
+//                Intent intent_back = new Intent(GameMenuActivity.this, MainActivity.class);
+//                startActivity(intent_back);
                 return true;
             case android.R.id.home: //tu je pa potrebno spredaj napisati android, ker se item z id-jem "R.id.home" ne nahaja v nobeni moji mapi, ampak (verjetno) v neki standardni android knjižnici al nekj podobnega
-                                    //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+                                    //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button)
                 this.finish();
                 return true;
         }

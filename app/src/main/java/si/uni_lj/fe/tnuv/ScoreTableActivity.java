@@ -1,8 +1,10 @@
 package si.uni_lj.fe.tnuv;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -25,6 +28,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -83,15 +88,24 @@ public class ScoreTableActivity extends AppCompatActivity {
 
                 TextView playerTextView = new TextView(this);
                 playerTextView.setText(player.getNickname());
-                playerTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+                playerTextView.setGravity(Gravity.CENTER);
+//                playerTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));  //tega ne sme bit, drugače gravity center ne dela
                 playerTextView.setTextColor(Color.BLACK);
                 playerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                 playerTextView.setTypeface(null, Typeface.BOLD);
                 playerInfoLayout.addView(playerTextView);
 
                 Button scoreButton = new Button(this);
-                scoreButton.setText("Click to Insert Score");
+                scoreButton.setText("Insert Score");
+//                scoreButton.setTextColor(Color.WHITE);
+//                scoreButton.setTextColor(Color.BLACK);
+                scoreButton.setTextSize(14);
+//                scoreButton.setBackgroundColor(getResources().getColor(R.color.lighter_red));  //piše da je getColor() depricated
+//                scoreButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lighter_red));
+//                scoreButton.setBackgroundColor(Color.parseColor("#f06e65"));
+//                scoreButton.setBackgroundColor(Color.GRAY);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(150), LinearLayout.LayoutParams.WRAP_CONTENT);
+//                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 scoreButton.setLayoutParams(params);
                 scoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -108,7 +122,9 @@ public class ScoreTableActivity extends AppCompatActivity {
                 // Display the player's scores or a message if no scores have been inserted yet
                 if (scores.size() == 0) {
                     TextView messageTextView = new TextView(this);
-                    messageTextView.setText("Please insert score for this player.");
+//                    messageTextView.setText("Please insert score for this player."); //je predolg tekst in pol je velka luknja v tabeli
+                    messageTextView.setText("Please insert score.");
+                    messageTextView.setTypeface(null, Typeface.ITALIC);
                     messageTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
                     playerInfoLayout.addView(messageTextView);
                 } else {
@@ -125,7 +141,9 @@ public class ScoreTableActivity extends AppCompatActivity {
                         TextView scoreTextView = new TextView(this);
                         int scoreValue = (int) score.get("score");
                         scoreTextView.setText(Integer.toString(scoreValue));
-                        scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+                        scoreTextView.setTextSize(20);
+                        scoreTextView.setGravity(Gravity.CENTER);
+//                        scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));   //tega ne sme bit, drugače gravity center ne dela
 
                         // Set the color of the score to red if it's 0
                         if (scoreValue == 0) {
@@ -229,13 +247,23 @@ public class ScoreTableActivity extends AppCompatActivity {
     // Method to show the dialog for inserting a score
     private void showInsertScoreDialog(int gameId, int playerId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Insert Score");
-        builder.setMessage("Enter the score:");
+//        builder.setTitle("Insert Score");
+//        builder.setMessage("Enter the score:");
+        builder.setTitle("Enter the score");
+
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
         builder.setView(input);
+
+        // Show the keyboard
+        input.requestFocus();
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);  //to dela le če to dodam v dodaten gumb
+//        imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);  //to dela le če to dodam v dodaten gumb
+//        UIUtil.showKeyboard(this, input);  //to tud ne dela
+//        UIUtil.showKeyboardInDialog(, input);
+
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -259,6 +287,9 @@ public class ScoreTableActivity extends AppCompatActivity {
                     }
                     dbHelper.insertGameScore(gameId, playerId, score);
                     refreshScoreTable();
+                }else{
+                    Toast.makeText(ScoreTableActivity.this, "You haven't entered any number.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
             }
         });

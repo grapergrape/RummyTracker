@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp" />
 
+
     <Button
         android:id="@+id/add_players_button"
         android:layout_width="wrap_content"
@@ -25,17 +27,17 @@
         android:text="Add selected players" />
 
     <Button
-        android:id="@+id/insert_player_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Insert a new player" />
-
-    <Button
         android:id="@+id/delete_player_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Delete selected players" />
+
+    <Button
+        android:id="@+id/insert_player_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Insert a new player" />
 
 </LinearLayout>

@@ -19,6 +19,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 import si.uni_lj.fe.tnuv.database.MyDatabaseHelper;
 
 //public class AddGameActivity extends AppCompatActivity implements View.OnClickListener {
@@ -63,7 +65,7 @@ public class AddGameActivity extends AppCompatActivity {
         gameNameEditText.requestFocus();
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);  //to dela le če to dodam v dodaten gumb
 //        imm.showSoftInput(gameNameEditText, InputMethodManager.SHOW_IMPLICIT);  //to dela le če to dodam v dodaten gumb
-
+//        UIUtil.showKeyboard(this, gameNameEditText);  //to tud ne dela
 
         insertButton.setOnClickListener(v -> {
             String gameName = gameNameEditText.getText().toString().trim();

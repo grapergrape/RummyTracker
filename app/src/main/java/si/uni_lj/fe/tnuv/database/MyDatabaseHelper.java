@@ -74,6 +74,13 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to upgrade the database schema, modify this method
     }
+    public void removeScore(int scoreId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = COLUMN_SCORE_ID + " = ?";
+        String[] whereArgs = {String.valueOf(scoreId)};
+        db.delete(TABLE_GAME_SCORES, whereClause, whereArgs);
+    }
+
     public void removePlayersFromGame(List<String> playerNicknames, int gameId) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -742,6 +749,19 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
 
         return consecutiveTracker;
     }
+
+    public void editScore(int scoreId, int newScore) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SCORE, newScore);
+
+        String whereClause = COLUMN_SCORE_ID + " = ?";
+        String[] whereArgs = {String.valueOf(scoreId)};
+
+        db.update(TABLE_GAME_SCORES, values, whereClause, whereArgs);
+    }
+
 }
 
 

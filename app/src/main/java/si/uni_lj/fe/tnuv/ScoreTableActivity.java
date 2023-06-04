@@ -48,7 +48,6 @@ public class ScoreTableActivity extends AppCompatActivity {
         setContentView(R.layout.activity_score_table);
         Log.d("Tag", "[ScoreTable] {onCreate()}");
 
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // For up action (go back) button in the toolbar/app bar/action bar
     }
 
@@ -89,7 +88,6 @@ public class ScoreTableActivity extends AppCompatActivity {
                 TextView playerTextView = new TextView(this);
                 playerTextView.setText(player.getNickname());
                 playerTextView.setGravity(Gravity.CENTER);
-//                playerTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));  //tega ne sme bit, drugače gravity center ne dela
                 playerTextView.setTextColor(Color.BLACK);
                 playerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
                 playerTextView.setTypeface(null, Typeface.BOLD);
@@ -97,15 +95,8 @@ public class ScoreTableActivity extends AppCompatActivity {
 
                 Button scoreButton = new Button(this);
                 scoreButton.setText("Insert Score");
-//                scoreButton.setTextColor(Color.WHITE);
-//                scoreButton.setTextColor(Color.BLACK);
                 scoreButton.setTextSize(14);
-//                scoreButton.setBackgroundColor(getResources().getColor(R.color.lighter_red));  //piše da je getColor() depricated
-//                scoreButton.setBackgroundColor(ContextCompat.getColor(this, R.color.lighter_red));
-//                scoreButton.setBackgroundColor(Color.parseColor("#f06e65"));
-//                scoreButton.setBackgroundColor(Color.GRAY);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(150), LinearLayout.LayoutParams.WRAP_CONTENT);
-//                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 scoreButton.setLayoutParams(params);
                 scoreButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -122,7 +113,6 @@ public class ScoreTableActivity extends AppCompatActivity {
                 // Display the player's scores or a message if no scores have been inserted yet
                 if (scores.size() == 0) {
                     TextView messageTextView = new TextView(this);
-//                    messageTextView.setText("Please insert score for this player."); //je predolg tekst in pol je velka luknja v tabeli
                     messageTextView.setText("Please insert score.");
                     messageTextView.setTypeface(null, Typeface.ITALIC);
                     messageTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -143,7 +133,6 @@ public class ScoreTableActivity extends AppCompatActivity {
                         scoreTextView.setText(Integer.toString(scoreValue));
                         scoreTextView.setTextSize(20);
                         scoreTextView.setGravity(Gravity.CENTER);
-//                        scoreTextView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1));   //tega ne sme bit, drugače gravity center ne dela
 
                         // Set the color of the score to red if it's 0
                         if (scoreValue == 0) {
@@ -151,6 +140,15 @@ public class ScoreTableActivity extends AppCompatActivity {
                         }
 
                         sessionLayout.addView(scoreTextView);
+
+                        // Set the onClickListener for the scoreTextView
+                        scoreTextView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int scoreId = (int) score.get("score_id");
+                                showDeleteScoreDialog(scoreId);
+                            }
+                        });
 
                         playerInfoLayout.addView(sessionLayout);
                     }
@@ -172,39 +170,58 @@ public class ScoreTableActivity extends AppCompatActivity {
             }
         });
     }
+
+
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
 
+    private void showDeleteScoreDialog(int scoreId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Action");
+        builder.setMessage("Do you want to delete or edit this score?");
 
-    // Method to show the dialog for editing a score
-    private void showEditScoreDialog(int gameId, int playerId, int consecutiveTracker) {
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showConfirmDeletionDialog(scoreId);
+            }
+        });
+
+        builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                showEditScoreDialog(scoreId);
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showEditScoreDialog(int scoreId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit Score");
         builder.setMessage("Enter the new score:");
 
+        // Create an input field for the new score
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
         builder.setView(input);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                // Get the new score value from the input field
                 String newScoreString = input.getText().toString();
-                if (!newScoreString.isEmpty()) {
-                    int newScore = Integer.parseInt(newScoreString);
-                    boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
+                int newScore = Integer.parseInt(newScoreString);
 
-                    if (newScore == 0 && isSessionZeroScored) {
-                        // Prompt the user to rewrite the score because someone else has a score of 0 for the session
-                        Toast.makeText(ScoreTableActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        dbHelper.editGameScore(gameId, playerId, consecutiveTracker, newScore);
-                        refreshScoreTable();
-                    }
-                }
+                // Update the score in the database
+                dbHelper.editScore(scoreId, newScore);
+
+                // Refresh the score table
+                refreshScoreTable();
             }
         });
 
@@ -219,21 +236,22 @@ public class ScoreTableActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // Method to show the dialog for confirming score deletion
-    private void showConfirmDeleteDialog(int gameId, int playerId, int consecutiveTracker) {
+    private void showConfirmDeletionDialog(int scoreId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm Delete");
+        builder.setTitle("Confirm Deletion");
         builder.setMessage("Are you sure you want to delete this score?");
 
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dbHelper.removeGameScore(gameId, playerId, consecutiveTracker);
+                // Remove the score from the database
+                dbHelper.removeScore(scoreId);
+                // Refresh the score table
                 refreshScoreTable();
             }
         });
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -244,13 +262,12 @@ public class ScoreTableActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
+
     // Method to show the dialog for inserting a score
     private void showInsertScoreDialog(int gameId, int playerId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Insert Score");
-//        builder.setMessage("Enter the score:");
         builder.setTitle("Enter the score");
-
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -259,11 +276,6 @@ public class ScoreTableActivity extends AppCompatActivity {
 
         // Show the keyboard
         input.requestFocus();
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);  //to dela le če to dodam v dodaten gumb
-//        imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);  //to dela le če to dodam v dodaten gumb
-//        UIUtil.showKeyboard(this, input);  //to tud ne dela
-//        UIUtil.showKeyboardInDialog(, input);
-
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -274,12 +286,12 @@ public class ScoreTableActivity extends AppCompatActivity {
                     boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
                     boolean isMaxConsecutiveTrackerFullyScored = dbHelper.isMaxConsecutiveTrackerFullyScored(gameId);
                     if (score == 0) {
-                        if (isSessionZeroScored){
-                        // Prompt the user to rewrite the score because someone else has a score of 0 for the session
+                        if (isSessionZeroScored) {
+                            // Prompt the user to rewrite the score because someone else has a score of 0 for the session
                             Toast.makeText(ScoreTableActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
                             return;
                         }
-                        if (!isMaxConsecutiveTrackerFullyScored){
+                        if (!isMaxConsecutiveTrackerFullyScored) {
                             // Prompt the user to rewrite the score because someone else has a score of 0 for the session
                             Toast.makeText(ScoreTableActivity.this, "Please finish inserting the previous session first", Toast.LENGTH_SHORT).show();
                             return;
@@ -287,7 +299,7 @@ public class ScoreTableActivity extends AppCompatActivity {
                     }
                     dbHelper.insertGameScore(gameId, playerId, score);
                     refreshScoreTable();
-                }else{
+                } else {
                     Toast.makeText(ScoreTableActivity.this, "You haven't entered any number.", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -305,20 +317,15 @@ public class ScoreTableActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
     // Method to refresh the score table after a change is made
     private void refreshScoreTable() {
         onStart(); // Re-fetch the data and redraw the score table
     }
 
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+            case android.R.id.home:
                 this.finish();
                 return true;
         }
@@ -354,5 +361,4 @@ public class ScoreTableActivity extends AppCompatActivity {
         Log.d("Tag", "[ScoreTable] {onRestart()}");
         super.onRestart();
     }
-
 }

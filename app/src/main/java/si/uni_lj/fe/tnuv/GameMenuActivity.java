@@ -79,11 +79,14 @@ public class GameMenuActivity extends AppCompatActivity {
         leaderboardsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent_leaderboards = new Intent(GameMenuActivity.this, ViewStatsActivity.class);   //Intent(kdo kliče, koga kliče)
-                startActivity(intent_leaderboards);
+                int gameId = dbHelper.getGameId(game_name_string);
 
+                Intent intent_leaderboards = new Intent(GameMenuActivity.this, ViewStatsActivity.class);
+                intent_leaderboards.putExtra("gameId", gameId); // Add the gameId as an extra
+                startActivity(intent_leaderboards);
             }
         });
+
 
     }
 

@@ -8,23 +8,24 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import si.uni_lj.fe.tnuv.database.MyDatabaseHelper;
 
 public class ViewStatsActivity extends AppCompatActivity {
-
-    private Button viewAverageScoresButton;
-    private Button mostWinsButton;
+    private int gameId;
     private ListView scoreListView;
     private ScoreAdapter scoreAdapter;
 
@@ -38,43 +39,69 @@ public class ViewStatsActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        viewAverageScoresButton = findViewById(R.id.view_average_scores_button);
-        mostWinsButton = findViewById(R.id.most_wins_button);
+        Spinner statsSpinner = findViewById(R.id.stats_spinner);
         scoreListView = findViewById(R.id.score_list_view);
 
         databaseHelper = new MyDatabaseHelper(this);
+        // Retrieve the gameId from the intent extras
+        Intent intent = getIntent();
+        gameId = intent.getIntExtra("gameId", -1);
 
-        viewAverageScoresButton.setOnClickListener(new View.OnClickListener() {
+        // Use the gameId as needed
+
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.stats_options, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statsSpinner.setAdapter(spinnerAdapter);
+
+        statsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewStatsActivity.this, AverageScoresActivity.class);
-                startActivity(intent);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedOption = parent.getItemAtPosition(position).toString();
+                retrieveStats(selectedOption, gameId);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
             }
         });
+    }
 
-        mostWinsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ViewStatsActivity.this, MostWinsActivity.class);
-                startActivity(intent);
-            }
-        });
+    private void retrieveStats(String selectedOption, int gameId) {
+        List<String> statsList;
 
-        // Retrieve the top ten highest score instances
-        List<MyDatabaseHelper.ScoreInstance> scoreInstances = databaseHelper.getTop10HighestScoreInstances();
+        if (selectedOption.equals("Top 10 Worst Scores in This Game")) {
+            statsList = databaseHelper.getTop10HighestScoreInstancesForGame(gameId);
+        } else if (selectedOption.equals("Players Sorted by Wins in This Game")) {
+            statsList = databaseHelper.getPlayersSortedByWinsForGame(gameId);
+        } else if (selectedOption.equals("Players Sorted by Average Scores in This Game")) {
+            statsList = databaseHelper.getPlayersSortedByAverageScoreForGame(gameId);
+        } else if (selectedOption.equals("Top 10 Worst Scores All Time")) {
+            statsList = databaseHelper.getTop10HighestScoreInstances();
+        } else if (selectedOption.equals("Players Sorted by Wins All Time")) {
+            statsList = databaseHelper.getPlayersSortedByWins();
+        } else if (selectedOption.equals("Players Sorted by Average Scores All Time")) {
+            statsList = databaseHelper.getPlayersSortedByAverageScore();
+        } else {
+            statsList = new ArrayList<>(); // Default empty list
+        }
 
         // Create and set the adapter to display the data
-        scoreAdapter = new ScoreAdapter(this, scoreInstances);
+        scoreAdapter = new ScoreAdapter(this, statsList);
         scoreListView.setAdapter(scoreAdapter);
     }
 
     // Custom adapter class for displaying the score instances
-    private class ScoreAdapter extends ArrayAdapter<MyDatabaseHelper.ScoreInstance> {
+    private class ScoreAdapter extends ArrayAdapter<String> {
 
-        public ScoreAdapter(Context context, List<MyDatabaseHelper.ScoreInstance> scoreInstances) {
-            super(context, 0, scoreInstances);
+        public ScoreAdapter(Context context, List<String> statsList) {
+            super(context, 0, statsList);
         }
 
+        // Modify the getView() method to display the stats in the table view item
+        // You can customize this method to format the stats as desired
+        // For example, split the string to display different parts in separate TextViews
+        // You can also modify the layout file (score_item.xml) accordingly
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -82,32 +109,16 @@ public class ViewStatsActivity extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.score_item, parent, false);
             }
 
-            // Get the current score instance
-            MyDatabaseHelper.ScoreInstance scoreInstance = getItem(position);
+            String stats = getItem(position);
 
-            // Set the player nickname and score in the table view item
-            TextView nicknameTextView = convertView.findViewById(R.id.nickname_text_view);
-            TextView scoreTextView = convertView.findViewById(R.id.score_text_view);
-
-            if (position == 0) {
-                TextView wallOfShameTextView = convertView.findViewById(R.id.wall_of_shame_text_view);
-                wallOfShameTextView.setVisibility(View.VISIBLE);
-                TextView playerNameTextView = convertView.findViewById(R.id.player_name_text_view);
-                playerNameTextView.setVisibility(View.VISIBLE);
-            } else {
-                TextView wallOfShameTextView = convertView.findViewById(R.id.wall_of_shame_text_view);
-                wallOfShameTextView.setVisibility(View.GONE);
-                TextView playerNameTextView = convertView.findViewById(R.id.player_name_text_view);
-                playerNameTextView.setVisibility(View.GONE);
-            }
-            TextView playerNameTextView = convertView.findViewById(R.id.player_name_text_view);
-            playerNameTextView.setVisibility(View.GONE);
-            nicknameTextView.setText(scoreInstance.getNickname());
-            scoreTextView.setText(String.valueOf(scoreInstance.getScore()));
+            // Set the stats in the table view item
+            TextView statsTextView = convertView.findViewById(R.id.stats_text_view);
+            statsTextView.setText(stats);
 
             return convertView;
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

@@ -48,21 +48,9 @@
             android:label="Insert Player"
             android:parentActivityName=".AddPlayerActivity" />
         <activity
-            android:name=".InsertScoreActivity"
-            android:label="Insert Score"
-            android:parentActivityName=".AddPlayerActivity" />
-        <activity
             android:name=".ViewStatsActivity"
             android:label="View Stats"
             android:parentActivityName=".GameMenuActivity" />
-        <activity
-            android:name=".MostWinsActivity"
-            android:label="View Most Wins Stat"
-            android:parentActivityName=".ViewStatsActivity" />
-        <activity
-            android:name=".AverageScoresActivity"
-            android:label="View Average Scores Stat"
-            android:parentActivityName=".ViewStatsActivity" />
     </application>
 
 

@@ -5,17 +5,15 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/view_average_scores_button"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/stats_spinner"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View Average Scores"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center_horizontal"
+        android:entries="@array/stats_options" />
 
-    <Button
-        android:id="@+id/most_wins_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Most Wins"/>
 
     <ListView
         android:id="@+id/score_list_view"

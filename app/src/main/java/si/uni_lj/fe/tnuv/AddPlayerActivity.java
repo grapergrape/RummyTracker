@@ -104,6 +104,21 @@ public class AddPlayerActivity extends AppCompatActivity {
             }
         });
 
+        // Find the button to remove the selected players from the game and set its click listener
+        Button removeButton = findViewById(R.id.remove_players_button);
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedPlayers.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please select at least one player to remove", Toast.LENGTH_SHORT).show();
+                } else {
+                    dbHelper.removePlayersFromGame(selectedPlayers, gameId);
+                    Toast.makeText(getApplicationContext(), "Selected players removed from the game", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
+
         // Find the button to delete a player and set its click listener
         Button deleteButton = findViewById(R.id.delete_player_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {

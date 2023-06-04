@@ -74,6 +74,35 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to upgrade the database schema, modify this method
     }
+    public void removePlayersFromGame(List<String> playerNicknames, int gameId) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        // Get the player IDs based on the provided nicknames
+        String playerIdsQuery = "SELECT " + COLUMN_PLAYER_ID + " FROM " + TABLE_PLAYERS +
+                " WHERE " + COLUMN_PLAYER_NICKNAME + " IN ('" + TextUtils.join("','", playerNicknames) + "')";
+        Cursor cursor = db.rawQuery(playerIdsQuery, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int playerId = cursor.getInt(cursor.getColumnIndex(COLUMN_PLAYER_ID));
+
+                // Delete the game player entry
+                db.delete("game_players", "game_id = ? AND player_id = ?", new String[]{String.valueOf(gameId), String.valueOf(playerId)});
+
+                // Delete the game scores for the specific game and player
+                db.delete("game_scores", "game_player_id IN " +
+                        "(SELECT rowid FROM game_players WHERE game_id = ? AND player_id = ?)", new String[]{String.valueOf(gameId), String.valueOf(playerId)});
+            } while (cursor.moveToNext());
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        db.close();
+    }
+
+
     // Method that returns a list of the 10 highest scores in the game across all games
     public ArrayList<String> getTop10HighestScoreInstances() {
         ArrayList<String> topScoresList = new ArrayList<>();

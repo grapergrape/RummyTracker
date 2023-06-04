@@ -283,21 +283,7 @@ public class ScoreTableActivity extends AppCompatActivity {
                 String scoreString = input.getText().toString();
                 if (!scoreString.isEmpty()) {
                     int score = Integer.parseInt(scoreString);
-                    boolean isSessionZeroScored = dbHelper.isSessionZeroScored(gameId);
-                    boolean isMaxConsecutiveTrackerFullyScored = dbHelper.isMaxConsecutiveTrackerFullyScored(gameId);
-                    if (score == 0) {
-                        if (isSessionZeroScored) {
-                            // Prompt the user to rewrite the score because someone else has a score of 0 for the session
-                            Toast.makeText(ScoreTableActivity.this, "Another player already has a score of 0 for this session. Please rewrite the score.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (!isMaxConsecutiveTrackerFullyScored) {
-                            // Prompt the user to rewrite the score because someone else has a score of 0 for the session
-                            Toast.makeText(ScoreTableActivity.this, "Please finish inserting the previous session first", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    }
-                    dbHelper.insertGameScore(gameId, playerId, score);
+                    dbHelper.insertGameScore(gameId, playerId, score); // Pass the consecutive tracker to the insertGameScore method
                     refreshScoreTable();
                 } else {
                     Toast.makeText(ScoreTableActivity.this, "You haven't entered any number.", Toast.LENGTH_SHORT).show();
@@ -316,6 +302,9 @@ public class ScoreTableActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
+
 
     // Method to refresh the score table after a change is made
     private void refreshScoreTable() {

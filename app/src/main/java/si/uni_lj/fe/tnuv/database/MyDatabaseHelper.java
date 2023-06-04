@@ -74,13 +74,88 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // If you need to upgrade the database schema, modify this method
     }
+
+    public int getConsecutiveTracker(int gameId, int playerId) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        int consecutiveTracker = 0;
+
+        // First, find the game_player_id for this game and player
+        String findGamePlayerSql = "SELECT rowid FROM game_players WHERE game_id = ? AND player_id = ?";
+        String[] findGamePlayerArgs = {String.valueOf(gameId), String.valueOf(playerId)};
+        Cursor cursor = db.rawQuery(findGamePlayerSql, findGamePlayerArgs);
+        int gamePlayerId = -1;
+        if (cursor.moveToNext()) {
+            gamePlayerId = cursor.getInt(0);
+        }
+        cursor.close();
+
+        // If the game_player_id was not found, return 0
+        if (gamePlayerId == -1) {
+            return consecutiveTracker;
+        }
+
+        // Find the latest consecutive tracker value for this player in this game
+        String findTrackerSql = "SELECT consecutive_tracker FROM game_scores WHERE game_player_id = ? ORDER BY score_id DESC LIMIT 1";
+        String[] findTrackerArgs = {String.valueOf(gamePlayerId)};
+        cursor = db.rawQuery(findTrackerSql, findTrackerArgs);
+        if (cursor.moveToNext()) {
+            consecutiveTracker = cursor.getInt(0);
+        }
+        cursor.close();
+
+
+        return consecutiveTracker;
+    }
+
     public void removeScore(int scoreId) {
         SQLiteDatabase db = this.getWritableDatabase();
         String whereClause = COLUMN_SCORE_ID + " = ?";
         String[] whereArgs = {String.valueOf(scoreId)};
         db.delete(TABLE_GAME_SCORES, whereClause, whereArgs);
     }
+    public String isSessionZeroScored(int gameId, int playerId, int consecutiveTracker) {
+        SQLiteDatabase db = this.getReadableDatabase();
 
+        // Query to check if any other player in the game has a score of 0 for the given consecutive tracker
+        String query = "SELECT " + TABLE_PLAYERS + "." + COLUMN_PLAYER_NICKNAME +
+                " FROM " + TABLE_PLAYERS +
+                " INNER JOIN game_players ON " + TABLE_PLAYERS + "." + COLUMN_PLAYER_ID + " = game_players.player_id" +
+                " INNER JOIN game_scores ON game_players.rowid = game_scores.game_player_id" +
+                " WHERE game_scores.consecutive_tracker = " + consecutiveTracker +
+                " AND game_scores.score = 0" +
+                " AND game_players.game_id = " + gameId +
+                " AND game_players.player_id != " + playerId;
+
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst()) {
+            // Retrieve the nickname of the other player
+            String otherPlayerNickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+            cursor.close();
+            return otherPlayerNickname;
+        } else {
+            cursor.close();
+            return null;
+        }
+    }
+
+    public String getPlayerNickname(int playerId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] columns = {COLUMN_PLAYER_NICKNAME};
+        String selection = COLUMN_PLAYER_ID + " = ?";
+        String[] selectionArgs = {String.valueOf(playerId)};
+
+        Cursor cursor = db.query(TABLE_PLAYERS, columns, selection, selectionArgs, null, null, null);
+
+        String nickname = null;
+        if (cursor.moveToFirst()) {
+            nickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
+        }
+
+        cursor.close();
+        return nickname;
+    }
     public void removePlayersFromGame(List<String> playerNicknames, int gameId) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -262,119 +337,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         return playerStatsList;
-    }
-
-    public boolean isMaxConsecutiveTrackerFullyScored(int gameId) {
-        List<Player> playerList = getPlayersInGame(gameId); // Retrieve the player list for the game
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Query to retrieve the highest consecutive tracker for the given game ID
-        String query = "SELECT MAX(" + COLUMN_CONSECUTIVE_TRACKER + ") AS max_consecutive_tracker" +
-                " FROM " + TABLE_GAME_SCORES +
-                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                " WHERE game_players.game_id = ?";
-
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(gameId)});
-        int maxConsecutiveTracker = 0;
-        if (cursor.moveToFirst()) {
-            maxConsecutiveTracker = cursor.getInt(cursor.getColumnIndex("max_consecutive_tracker"));
-        }
-        cursor.close();
-
-        // Query to check if each player has an inserted score instance for the maximum consecutive tracker
-        query = "SELECT COUNT(*) AS count" +
-                " FROM " + TABLE_GAME_SCORES +
-                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                " WHERE game_players.game_id = ?" +
-                " AND " + COLUMN_CONSECUTIVE_TRACKER + " = ?";
-
-        cursor = db.rawQuery(query, new String[]{String.valueOf(gameId), String.valueOf(maxConsecutiveTracker)});
-
-        boolean isMaxConsecutiveTrackerFullyScored = false;
-        if (cursor.moveToFirst()) {
-            int count = cursor.getInt(cursor.getColumnIndex("count"));
-            isMaxConsecutiveTrackerFullyScored = count == playerList.size();
-        }
-
-        cursor.close();
-        db.close();
-
-        return isMaxConsecutiveTrackerFullyScored;
-    }
-
-    public boolean isSessionZeroScored(int gameId) {
-        List<Player> playerList = getPlayersInGame(gameId); // Retrieve the player list for the game
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        // Query to retrieve the highest consecutive tracker for the given game ID
-        String query = "SELECT MAX(" + COLUMN_CONSECUTIVE_TRACKER + ") AS max_consecutive_tracker" +
-                " FROM " + TABLE_GAME_SCORES +
-                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                " WHERE game_players.game_id = ?";
-
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(gameId)});
-        int maxConsecutiveTracker = 0;
-        if (cursor.moveToFirst()) {
-            maxConsecutiveTracker = cursor.getInt(cursor.getColumnIndex("max_consecutive_tracker"));
-        }
-        cursor.close();
-
-        query = "SELECT COUNT(*) AS count" +
-                " FROM " + TABLE_GAME_SCORES +
-                " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                " WHERE game_players.game_id = ?" +
-                " AND " + COLUMN_CONSECUTIVE_TRACKER + " = ?" +
-                " AND (" +
-                "     " + COLUMN_SCORE + " = 0" +
-                "     OR game_scores.rowid = (" +
-                "         SELECT game_scores.rowid" +
-                "         FROM " + TABLE_GAME_SCORES +
-                "         INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                "         WHERE game_players.game_id = ?" +
-                "         AND " + COLUMN_CONSECUTIVE_TRACKER + " = ?" +
-                "         ORDER BY game_scores.rowid LIMIT 1" +
-                "     )" +
-                ")";
-
-
-        cursor = db.rawQuery(query, new String[]{String.valueOf(gameId), String.valueOf(maxConsecutiveTracker),
-                String.valueOf(gameId), String.valueOf(maxConsecutiveTracker)});
-
-        boolean isSessionZeroScored = false;
-        if (cursor.moveToFirst()) {
-            int count = cursor.getInt(cursor.getColumnIndex("count"));
-            isSessionZeroScored = count > 0;
-        }
-
-        cursor.close();
-
-        // If each player has a score inserted for the consecutive tracker, set isSessionZeroScored to false
-        if (isSessionZeroScored) {
-            int playerCount = playerList.size();
-
-            query = "SELECT COUNT(*) AS count" +
-                    " FROM " + TABLE_GAME_SCORES +
-                    " INNER JOIN game_players ON game_scores.game_player_id = game_players.rowid" +
-                    " WHERE game_players.game_id = ?" +
-                    " AND " + COLUMN_CONSECUTIVE_TRACKER + " = ?";
-
-            cursor = db.rawQuery(query, new String[]{String.valueOf(gameId), String.valueOf(maxConsecutiveTracker)});
-
-            if (cursor.moveToFirst()) {
-                int count = cursor.getInt(cursor.getColumnIndex("count"));
-                if (count == playerCount) {
-                    isSessionZeroScored = false;
-                }
-            }
-
-            cursor.close();
-        }
-
-        db.close();
-
-        return isSessionZeroScored;
     }
 
     public void editGameScore(int gameId, int playerId, int consecutiveTracker, int newScore) {
@@ -715,39 +677,6 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
             Log.d("RUMMY", nickname + " won the round of rummy!");
         }
-    }
-
-    private int getConsecutiveTracker(int gameId, int playerId) {
-        SQLiteDatabase db = getReadableDatabase();
-
-        int consecutiveTracker = 0;
-
-        // First, find the game_player_id for this game and player
-        String findGamePlayerSql = "SELECT rowid FROM game_players WHERE game_id = ? AND player_id = ?";
-        String[] findGamePlayerArgs = {String.valueOf(gameId), String.valueOf(playerId)};
-        Cursor cursor = db.rawQuery(findGamePlayerSql, findGamePlayerArgs);
-        int gamePlayerId = -1;
-        if (cursor.moveToNext()) {
-            gamePlayerId = cursor.getInt(0);
-        }
-        cursor.close();
-
-        // If the game_player_id was not found, return 0
-        if (gamePlayerId == -1) {
-            return consecutiveTracker;
-        }
-
-        // Find the latest consecutive tracker value for this player in this game
-        String findTrackerSql = "SELECT consecutive_tracker FROM game_scores WHERE game_player_id = ? ORDER BY score_id DESC LIMIT 1";
-        String[] findTrackerArgs = {String.valueOf(gamePlayerId)};
-        cursor = db.rawQuery(findTrackerSql, findTrackerArgs);
-        if (cursor.moveToNext()) {
-            consecutiveTracker = cursor.getInt(0);
-        }
-        cursor.close();
-
-
-        return consecutiveTracker;
     }
 
     public void editScore(int scoreId, int newScore) {

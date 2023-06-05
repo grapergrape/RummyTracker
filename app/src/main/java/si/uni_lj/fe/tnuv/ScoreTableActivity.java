@@ -46,15 +46,15 @@ public class ScoreTableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score_table);
-        Log.d("Tag", "[ScoreTable] {onCreate()}");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // For up action (go back) button in the toolbar/app bar/action bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
+
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("Tag", "[ScoreTable] {onStart()}");
 
         dbHelper = new MyDatabaseHelper(this);
 
@@ -171,7 +171,6 @@ public class ScoreTableActivity extends AppCompatActivity {
         });
     }
 
-
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
@@ -274,8 +273,7 @@ public class ScoreTableActivity extends AppCompatActivity {
         input.setFilters(new InputFilter[]{new InputFilter.LengthFilter(3), new InputFilterMinMax("0", "299")});
         builder.setView(input);
 
-        // Show the keyboard
-        input.requestFocus();
+        input.requestFocus(); //da je cursor v text boxu že takoj ob odprtju tega dialog boxa
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -319,35 +317,5 @@ public class ScoreTableActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d("Tag", "[ScoreTable] {onResume()}");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("Tag", "[ScoreTable] {onPause()}");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("Tag", "[ScoreTable] {onStop()}");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d("Tag", "[ScoreTable] {onDestroy()}");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("Tag", "[ScoreTable] {onRestart()}");
-        super.onRestart();
     }
 }

@@ -35,7 +35,6 @@ public class ViewStatsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_stats);
-        Log.d("Tag", "[ViewStats] {onCreate()}");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -46,8 +45,6 @@ public class ViewStatsActivity extends AppCompatActivity {
         // Retrieve the gameId from the intent extras
         Intent intent = getIntent();
         gameId = intent.getIntExtra("gameId", -1);
-
-        // Use the gameId as needed
 
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this, R.array.stats_options, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -114,6 +111,7 @@ public class ViewStatsActivity extends AppCompatActivity {
             // Set the stats in the table view item
             TextView statsTextView = convertView.findViewById(R.id.stats_text_view);
             statsTextView.setText(stats);
+            statsTextView.setTextSize(19);
 
             return convertView;
         }
@@ -127,41 +125,5 @@ public class ViewStatsActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onStart() {
-        Log.d("Tag", "[ViewStats] {onStart()}");
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d("Tag", "[ViewStats] {onResume()}");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("Tag", "[ViewStats] {onPause()}");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("Tag", "[ViewStats] {onStop()}");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d("Tag", "[ViewStats] {onDestroy()}");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("Tag", "[ViewStats] {onRestart()}");
-        super.onRestart();
     }
 }

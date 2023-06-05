@@ -8,26 +8,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ScrollView
+        <HorizontalScrollView
+            android:id="@+id/score_table_scrollview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal">
 
-            <HorizontalScrollView
-                android:id="@+id/score_table_scrollview"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:id="@+id/score_table_linearlayout"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scrollbars="horizontal">
+                android:orientation="horizontal"
+                android:padding="16dp" />
 
-                <LinearLayout
-                    android:id="@+id/score_table_linearlayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp" />
-
-            </HorizontalScrollView>
-
-        </ScrollView>
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/no_players_textview"

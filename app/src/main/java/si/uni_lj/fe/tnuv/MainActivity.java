@@ -47,20 +47,15 @@ public class MainActivity extends AppCompatActivity {
     private TableLayout gameTableLayout;
     private Button viewStatsButton;
 
-    private ImageView imageMainWallpaper;    // za glavno ozadje aplikacije
-
-    public static int mainActivityChecker;
+    private ImageView imageMainWallpaper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("Tag","[Main] {onCreate()}");
-
 
         imageMainWallpaper = findViewById(R.id.menu_image);
         imageMainWallpaper.setImageResource(R.drawable.rummy_tracker_wallpaper);
-
 
         dbHelper = new MyDatabaseHelper(this);
 
@@ -76,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
         for (Game game : gameList) {
             TableRow row = new TableRow(this);
 
-
-
             Button gameNameButton = new Button(this);
             gameNameButton.setText(game.getName());
             gameNameButton.setTextSize(18);  //set the text size in pixels
@@ -91,16 +84,12 @@ public class MainActivity extends AppCompatActivity {
             int screenWidth = displayMetrics.widthPixels; //od Huawei-ja je 1080
             double game_btn_screen_ratio = 0.65;
 
-
             TableRow.LayoutParams tableRowParams  = new TableRow.LayoutParams((int) Math.round(game_btn_screen_ratio * screenWidth),
                     TableRow.LayoutParams.WRAP_CONTENT);
             tableRowParams.height=130;
 
-
-
             int game_btn_left_margin = (int) Math.round((1-game_btn_screen_ratio)/2*screenWidth);
             tableRowParams.setMargins(game_btn_left_margin, 5, 0, 5);
-
 
             gameNameButton.setLayoutParams(tableRowParams);
             gameNameButton.setOnClickListener(new View.OnClickListener() {
@@ -109,67 +98,14 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(MainActivity.this, GameMenuActivity.class);   //Intent(kdo kliče, koga kliče)
                     intent.putExtra("message_key_1", game.getName());
                     intent.putExtra("message_key_2", R.id.table_layout);
-
                     startActivity(intent);
-
                 }
             });
             row.addView(gameNameButton);
 
-
-
-
-
             gameTableLayout.addView(row);
         }
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d("Tag","[Main] {onStart()}");
-
-
-
-    }
-
-
-
-
-
-
-
-    @Override
-    protected void onResume() {
-        Log.d("Tag","[Main] {onResume()}");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("Tag","[Main] {onPause()}");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("Tag","[Main] {onStop()}");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {  //NEVEM zakaj bi v tej situaciji/taki aktivnosti rabil to funkcijo
-//        dbHelper.close();
-        Log.d("Tag","[Main] {onDestroy()}");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("Tag","[Main] {onRestart()}");
-        super.onRestart();
-    }
-
 
 }
 

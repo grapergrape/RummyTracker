@@ -24,7 +24,7 @@ public class InsertPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_insert_player);
         Log.d("Tag","[InsertPlayer] {onCreate()}");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbHelper = new MyDatabaseHelper(this);
         nicknameEditText = findViewById(R.id.nickname_edit_text);
@@ -51,54 +51,15 @@ public class InsertPlayerActivity extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    protected void onStart() {
-        Log.d("Tag","[InsertPlayer] {onStart()}");
-        super.onStart();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+            case android.R.id.home:
                 this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-
-
-    @Override
-    protected void onResume() {
-        Log.d("Tag","[InsertPlayer] {onResume()}");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("Tag","[InsertPlayer] {onPause()}");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("Tag","[InsertPlayer] {onStop()}");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-//        dbHelper.close();
-        Log.d("Tag","[InsertPlayer] {onDestroy()}");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("Tag","[InsertPlayer] {onRestart()}");
-        super.onRestart();
-    }
 }
 

@@ -3,48 +3,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
-
+    android:gravity="center_horizontal"
+    android:padding="12dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select players to add to game:"
+        android:text="Select players:"
         android:textAppearance="?android:textAppearanceMedium" />
 
     <ListView
         android:id="@+id/player_list_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_weight="10"/>
 
     <Button
         android:id="@+id/insert_player_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Insert a new player" />
+        android:textSize="17dp"
+        android:text="Create a new player" />
 
     <Button
         android:id="@+id/add_players_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="1dp"
+        android:textSize="17dp"
         android:text="Add selected players" />
 
     <Button
         android:id="@+id/remove_players_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:textSize="17dp"
         android:text="Remove Selected Players from the Game" />
 
     <Button
         android:id="@+id/delete_player_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="1dp"
+        android:textSize="16.5dp"
         android:text="Delete selected players" />
-
-
 
 </LinearLayout>

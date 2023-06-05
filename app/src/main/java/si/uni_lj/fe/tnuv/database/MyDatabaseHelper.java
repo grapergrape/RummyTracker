@@ -252,7 +252,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             do {
                 String playerNickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
                 double averageScore = cursor.getDouble(cursor.getColumnIndex("average_score"));
-                playerStatsList.add(playerNickname + ": " + averageScore);
+//                playerStatsList.add(playerNickname + ": " + averageScore);
+                playerStatsList.add(playerNickname + ": " + String.format("%.2f", averageScore));
             } while (cursor.moveToNext());
         }
 
@@ -329,7 +330,8 @@ public class MyDatabaseHelper extends SQLiteOpenHelper {
             do {
                 String playerNickname = cursor.getString(cursor.getColumnIndex(COLUMN_PLAYER_NICKNAME));
                 double averageScore = cursor.getDouble(cursor.getColumnIndex("average_score"));
-                playerStatsList.add(playerNickname + ": " + averageScore);
+//                playerStatsList.add(playerNickname + ": " + averageScore);
+                playerStatsList.add(playerNickname + ": " + String.format("%.2f", averageScore));
             } while (cursor.moveToNext());
         }
 

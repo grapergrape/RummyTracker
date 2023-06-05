@@ -1,7 +1,10 @@
 package si.uni_lj.fe.tnuv;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,9 +34,23 @@ public class AddPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_player);
-        Log.d("Tag","[AddPlayer] {onCreate()}");
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  //Za up action (go back) button v orodni vrstici (toolbar/app bar/action bar)
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels; //od Huawei-ja je 1080
+        double game_btn_screen_ratio = 0.8;
+
+        Button buttonInsertPlayer = findViewById(R.id.insert_player_button);
+        Button buttonAddPlayer = findViewById(R.id.add_players_button);
+        Button buttonRemovePlayer = findViewById(R.id.remove_players_button);
+        Button buttonDeletePlayer = findViewById(R.id.delete_player_button);
+
+        buttonInsertPlayer.getLayoutParams().width = (int) Math.round(screenWidth*game_btn_screen_ratio);
+        buttonAddPlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
+        buttonRemovePlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
+        buttonDeletePlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
 
     }
 
@@ -40,7 +58,6 @@ public class AddPlayerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("Tag", "[AddPlayer] {onStart()}");
 
         dbHelper = new MyDatabaseHelper(this);
         selectedPlayers = new ArrayList<>();
@@ -112,9 +129,7 @@ public class AddPlayerActivity extends AppCompatActivity {
                 if (selectedPlayers.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please select at least one player to remove", Toast.LENGTH_SHORT).show();
                 } else {
-                    dbHelper.removePlayersFromGame(selectedPlayers, gameId);
-                    Toast.makeText(getApplicationContext(), "Selected players removed from the game", Toast.LENGTH_SHORT).show();
-                    finish();
+                    showConfirmRemovingPlayer(selectedPlayers, gameId);
                 }
             }
         });
@@ -127,21 +142,68 @@ public class AddPlayerActivity extends AppCompatActivity {
                 if (selectedPlayers.isEmpty()) {
                     Toast.makeText(getApplicationContext(), "Please select at least one player to delete", Toast.LENGTH_SHORT).show();
                 } else {
-                    dbHelper.deletePlayersAndScores(selectedPlayers);
-                    Toast.makeText(getApplicationContext(), "Players and their scores deleted", Toast.LENGTH_SHORT).show();
-                    finish();
+                    showConfirmDeletingPlayer(selectedPlayers);
                 }
             }
         });
     }
 
+    private void showConfirmRemovingPlayer(List<String> selectedPlayers, int scoreId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Removal");
+        builder.setMessage("Are you sure you want to remove this player from this game?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dbHelper.removePlayersFromGame(selectedPlayers, gameId);
+                Toast.makeText(getApplicationContext(), "Selected players removed from the game", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showConfirmDeletingPlayer(List<String> selectedPlayers) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Deletion");
+        builder.setMessage("Are you sure you want to delete this player from all games?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dbHelper.deletePlayersAndScores(selectedPlayers);
+                Toast.makeText(getApplicationContext(), "Players and their scores deleted", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case android.R.id.home: //tale case MORAM NUJNO DEFINIRATI zato, da overwrite-am vgrajeno funkcijo za up action/go back button iz orodne vrstice (ta orodna vrstica je že vgrajeno v to mojo temo) (ne vem kako priti do te vgrajene/default funkcije za to, kaj naredi ta go back toolbar button
+            case android.R.id.home:
                 this.finish();
                 return true;
         }
@@ -149,35 +211,4 @@ public class AddPlayerActivity extends AppCompatActivity {
     }
 
 
-
-    @Override
-    protected void onResume() {
-        Log.d("Tag","[AddPlayer] {onResume()}");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d("Tag","[AddPlayer] {onPause()}");
-        super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d("Tag","[AddPlayer] {onStop()}");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        //        dbHelper.close();
-        Log.d("Tag","[AddPlayer] {onDestroy()}");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("Tag","[AddPlayer] {onRestart()}");
-        super.onRestart();
-    }
 }

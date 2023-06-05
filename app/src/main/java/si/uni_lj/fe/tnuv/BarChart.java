@@ -13,7 +13,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-public class BarChartView extends View {
+class BarChartView extends View {
     private static final int BAR_COLOR = Color.BLUE;
     private static final int TEXT_COLOR = Color.BLACK;
     private static final int BAR_PADDING = 20;

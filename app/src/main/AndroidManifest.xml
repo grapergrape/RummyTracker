@@ -6,13 +6,23 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo_diamond_symbol"
+        android:roundIcon="@drawable/logo_diamond_symbol"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RummyTracker"
+        android:largeHeap="true"
+        android:hardwareAccelerated="false"
         tools:targetApi="31">
 
+        <activity
+            android:name=".GameMenuActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".AddGameActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -22,33 +32,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".GameListActivity"
-            android:label="Game List" />
-        <activity
-            android:name=".PlayerListActivity"
-            android:label="Player List" />
+            android:name=".ScoreTableActivity"
+            android:label="Score Table"
+            android:parentActivityName=".GameMenuActivity" />
         <activity
             android:name=".AddPlayerActivity"
-            android:label="Add Player" />
+            android:label="Add Player"
+            android:parentActivityName=".ScoreTableActivity" />
         <activity
             android:name=".InsertPlayerActivity"
-            android:label="Insert Player" />
-        <activity
-            android:name=".InsertScoreActivity"
-            android:label="Insert Score" />
+            android:label="Insert Player"
+            android:parentActivityName=".AddPlayerActivity" />
         <activity
             android:name=".ViewStatsActivity"
-            android:label="View Stats" />
-        <activity
-            android:name=".MostWinsActivity"
-            android:label="View Most Wins Stat" />
-        <activity
-            android:name=".AverageScoresActivity"
-            android:label="View Average Scores Stat" />
-
-
+            android:label="View Stats"
+            android:parentActivityName=".GameMenuActivity" />
     </application>
 
 </manifest>

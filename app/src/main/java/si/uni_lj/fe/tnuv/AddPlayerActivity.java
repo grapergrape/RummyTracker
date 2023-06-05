@@ -1,12 +1,18 @@
 package si.uni_lj.fe.tnuv;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +34,30 @@ public class AddPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_player);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels; //od Huawei-ja je 1080
+        double game_btn_screen_ratio = 0.8;
+
+        Button buttonInsertPlayer = findViewById(R.id.insert_player_button);
+        Button buttonAddPlayer = findViewById(R.id.add_players_button);
+        Button buttonRemovePlayer = findViewById(R.id.remove_players_button);
+        Button buttonDeletePlayer = findViewById(R.id.delete_player_button);
+
+        buttonInsertPlayer.getLayoutParams().width = (int) Math.round(screenWidth*game_btn_screen_ratio);
+        buttonAddPlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
+        buttonRemovePlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
+        buttonDeletePlayer.getLayoutParams().width = (int) Math.round(screenWidth * game_btn_screen_ratio);
+
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         dbHelper = new MyDatabaseHelper(this);
         selectedPlayers = new ArrayList<>();
@@ -63,7 +93,6 @@ public class AddPlayerActivity extends AppCompatActivity {
             }
         });
 
-
         // Find the button to add the selected players to the game and set its click listener
         Button addButton = findViewById(R.id.add_players_button);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -91,11 +120,95 @@ public class AddPlayerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Find the button to remove the selected players from the game and set its click listener
+        Button removeButton = findViewById(R.id.remove_players_button);
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedPlayers.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please select at least one player to remove", Toast.LENGTH_SHORT).show();
+                } else {
+                    showConfirmRemovingPlayer(selectedPlayers, gameId);
+                }
+            }
+        });
+
+        // Find the button to delete a player and set its click listener
+        Button deleteButton = findViewById(R.id.delete_player_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedPlayers.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please select at least one player to delete", Toast.LENGTH_SHORT).show();
+                } else {
+                    showConfirmDeletingPlayer(selectedPlayers);
+                }
+            }
+        });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        dbHelper.close();
+    private void showConfirmRemovingPlayer(List<String> selectedPlayers, int scoreId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Removal");
+        builder.setMessage("Are you sure you want to remove this player from this game?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dbHelper.removePlayersFromGame(selectedPlayers, gameId);
+                Toast.makeText(getApplicationContext(), "Selected players removed from the game", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
+
+    private void showConfirmDeletingPlayer(List<String> selectedPlayers) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Deletion");
+        builder.setMessage("Are you sure you want to delete this player from all games?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dbHelper.deletePlayersAndScores(selectedPlayers);
+                Toast.makeText(getApplicationContext(), "Players and their scores deleted", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

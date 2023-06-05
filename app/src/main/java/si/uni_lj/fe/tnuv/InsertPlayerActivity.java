@@ -1,6 +1,8 @@
 package si.uni_lj.fe.tnuv;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +22,9 @@ public class InsertPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert_player);
+        Log.d("Tag","[InsertPlayer] {onCreate()}");
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         dbHelper = new MyDatabaseHelper(this);
         nicknameEditText = findViewById(R.id.nickname_edit_text);
@@ -47,9 +52,14 @@ public class InsertPlayerActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        dbHelper.close();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
+
 }
 

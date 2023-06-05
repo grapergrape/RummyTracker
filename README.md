@@ -28,5 +28,5 @@ git clone git@github.com:grapergrape/RummyTracker.git
 
 4. Familiarize yourself with the project structure, source code, and documentation. Feel free to contribute to the project by fixing issues, adding new features, or improving existing functionalities.
 
-We hope the Rummy Score Tracker project enhances your Rummy gaming experience by simplifying scorekeeping and providing valuable insights into your games. Happy gaming!
+We hope the Rummy Tracker project enhances your Rummy gaming experience by simplifying scorekeeping and providing valuable insights into your games. Happy gaming!
 
